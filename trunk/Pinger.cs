@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Timers;
 using System.Windows;
@@ -12,6 +13,7 @@ namespace InternetConnectionMonitor
 		private Ping pingSender;
 		private readonly Timer timer;
 		private long lastPing;
+		private int lastServer;
 
 		public Pinger(Configuration config, Action<int> callback)
 		{
@@ -27,7 +29,7 @@ namespace InternetConnectionMonitor
 		{
 			if (pingSender != null)
 				throw new InvalidOperationException("Already started");
-			if (string.IsNullOrEmpty(config.Server))
+			if (string.IsNullOrEmpty(config.Servers))
 				throw new InvalidOperationException("No server defined");
 
 			pingSender = new Ping();
@@ -41,9 +43,18 @@ namespace InternetConnectionMonitor
 			PingOptions options = new PingOptions();
 			options.DontFragment = true;
 
-			pingSender.SendAsync(config.Server, config.TimeoutMs, CreateBuffer(), options);
+			var servers = new List<string>(config.Servers.Split('\n'));
+			servers.ForEach(s => s.Trim());
+			servers.RemoveAll(s => s.Length < 1);
 
+			if (servers.Count < 1)
+				return;
+
+			lastServer = (lastServer + 1) % servers.Count;
 			lastPing = GetCurrentTickMs();
+
+			//Console.Write("Reply from " + servers[lastServer] + ": ");
+			pingSender.SendAsync(servers[lastServer], config.TimeoutMs, CreateBuffer(), options);
 		}
 
 		private byte[] CreateBuffer()
@@ -70,11 +81,11 @@ namespace InternetConnectionMonitor
 		{
 			if (e.Cancelled)
 			{
-				Console.WriteLine("Ping canceled");
+//				Console.WriteLine("Ping canceled");
 			}
 			else if (e.Error != null)
 			{
-				Console.WriteLine("Ping failed: " + e.Error);
+//				Console.WriteLine("Ping failed: " + e.Error);
 				OnNewPingTime(config.TimeoutMs);
 			}
 			else
@@ -87,7 +98,7 @@ namespace InternetConnectionMonitor
 				else
 					dt = config.TimeoutMs;
 
-				Console.WriteLine("Ping status: {0} in {1} ms", reply.Status, dt);
+//				Console.WriteLine("Ping status: {0} in {1} ms", reply.Status, dt);
 
 				OnNewPingTime(dt);
 			}
@@ -95,9 +106,12 @@ namespace InternetConnectionMonitor
 
 		private void OnNewPingTime(int dt)
 		{
+			int pingDt = (int) (GetCurrentTickMs() - lastPing);
+			
+			//Console.WriteLine("time=" + dt + "ms  clock=" + pingDt + "ms");
+
 			Application.Current.Dispatcher.BeginInvoke((Action) delegate { callback(dt); });
 
-			int pingDt = (int) (GetCurrentTickMs() - lastPing);
 			timer.Interval = Math.Max(100, config.TestEachMs - pingDt);
 			timer.Start();
 		}
@@ -109,6 +123,8 @@ namespace InternetConnectionMonitor
 
 		private void OnTimer(object sender, ElapsedEventArgs e)
 		{
+			timer.Stop();
+
 			SendPing();
 		}
 	}

@@ -19,10 +19,12 @@ namespace InternetConnectionMonitor
             public const string BYTES = "Bytes";
             public const string PROBLEM_THRESHOLD_MS = "ProblemThresholdMs";
             public const string FAIL_THRESHOLD_MS = "FailThresholdMs";
+            public const string ZENER_FACTOR = "ZenerFactor";
             public const string TIMEOUT_MS = "TimeoutMs";
             public const string TEST_EACH_MS = "TestEachMs";
             public const string AVERAGE_WINDOW = "AverageWindow";
-            public const string SERVER = "Server";
+            public const string AVERAGE_TYPE = "AverageType";
+            public const string SERVERS = "Servers";
         }
         
         #endregion
@@ -31,13 +33,15 @@ namespace InternetConnectionMonitor
         
         public BaseConfiguration()
         {
-            _bytes = 32;
-            _problemThresholdMs = 200;
+            _bytes = 8;
+            _problemThresholdMs = 300;
             _failThresholdMs = 1000;
+            _zenerFactor = 0.2;
             _timeoutMs = 1500;
-            _testEachMs = 2000;
-            _averageWindow = 10;
-            _server = "8.8.8.8";
+            _testEachMs = 5000;
+            _averageWindow = 6;
+            _averageType = 0;
+            _servers = "8.8.8.8\n8.8.4.4";
         }
         
         public BaseConfiguration(BaseConfiguration other)
@@ -45,10 +49,12 @@ namespace InternetConnectionMonitor
             _bytes = other.Bytes;
             _problemThresholdMs = other.ProblemThresholdMs;
             _failThresholdMs = other.FailThresholdMs;
+            _zenerFactor = other.ZenerFactor;
             _timeoutMs = other.TimeoutMs;
             _testEachMs = other.TestEachMs;
             _averageWindow = other.AverageWindow;
-            _server = other.Server;
+            _averageType = other.AverageType;
+            _servers = other.Servers;
         }
         
         #endregion
@@ -170,9 +176,48 @@ namespace InternetConnectionMonitor
         
         #endregion
         
+        #region Property ZenerFactor
+        
+        [DataMember(Name = "ZenerFactor", Order = 3, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private double _zenerFactor;
+        
+        public double ZenerFactor
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetZenerFactor();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetZenerFactor(value);
+            }
+        }
+        
+        protected virtual double GetZenerFactor()
+        {
+            return _zenerFactor;
+        }
+        
+        protected virtual bool SetZenerFactor(double zenerFactor)
+        {
+            if (_zenerFactor == zenerFactor)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.ZENER_FACTOR);
+            
+            _zenerFactor = zenerFactor;
+            
+            NotifyPropertyChanged(PROPERTIES.ZENER_FACTOR);
+            
+            return true;
+        }
+        
+        #endregion
+        
         #region Property TimeoutMs
         
-        [DataMember(Name = "TimeoutMs", Order = 3, IsRequired = false)]
+        [DataMember(Name = "TimeoutMs", Order = 4, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _timeoutMs;
         
@@ -211,7 +256,7 @@ namespace InternetConnectionMonitor
         
         #region Property TestEachMs
         
-        [DataMember(Name = "TestEachMs", Order = 4, IsRequired = false)]
+        [DataMember(Name = "TestEachMs", Order = 5, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _testEachMs;
         
@@ -250,7 +295,7 @@ namespace InternetConnectionMonitor
         
         #region Property AverageWindow
         
-        [DataMember(Name = "AverageWindow", Order = 5, IsRequired = false)]
+        [DataMember(Name = "AverageWindow", Order = 6, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _averageWindow;
         
@@ -287,39 +332,78 @@ namespace InternetConnectionMonitor
         
         #endregion
         
-        #region Property Server
+        #region Property AverageType
         
-        [DataMember(Name = "Server", Order = 6, IsRequired = false)]
+        [DataMember(Name = "AverageType", Order = 7, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string _server;
+        private int _averageType;
         
-        public string Server
+        public int AverageType
         {
             [DebuggerStepThrough]
             get {
-                return GetServer();
+                return GetAverageType();
             }
             [DebuggerStepThrough]
             set {
-                SetServer(value);
+                SetAverageType(value);
             }
         }
         
-        protected virtual string GetServer()
+        protected virtual int GetAverageType()
         {
-            return _server;
+            return _averageType;
         }
         
-        protected virtual bool SetServer(string server)
+        protected virtual bool SetAverageType(int averageType)
         {
-            if (_server == server)
+            if (_averageType == averageType)
                 return false;
                 
-            NotifyPropertyChanging(PROPERTIES.SERVER);
+            NotifyPropertyChanging(PROPERTIES.AVERAGE_TYPE);
             
-            _server = server;
+            _averageType = averageType;
             
-            NotifyPropertyChanged(PROPERTIES.SERVER);
+            NotifyPropertyChanged(PROPERTIES.AVERAGE_TYPE);
+            
+            return true;
+        }
+        
+        #endregion
+        
+        #region Property Servers
+        
+        [DataMember(Name = "Servers", Order = 8, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _servers;
+        
+        public string Servers
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetServers();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetServers(value);
+            }
+        }
+        
+        protected virtual string GetServers()
+        {
+            return _servers;
+        }
+        
+        protected virtual bool SetServers(string servers)
+        {
+            if (_servers == servers)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.SERVERS);
+            
+            _servers = servers;
+            
+            NotifyPropertyChanged(PROPERTIES.SERVERS);
             
             return true;
         }
@@ -338,14 +422,18 @@ namespace InternetConnectionMonitor
                     return GetProblemThresholdMs();
                 case PROPERTIES.FAIL_THRESHOLD_MS:
                     return GetFailThresholdMs();
+                case PROPERTIES.ZENER_FACTOR:
+                    return GetZenerFactor();
                 case PROPERTIES.TIMEOUT_MS:
                     return GetTimeoutMs();
                 case PROPERTIES.TEST_EACH_MS:
                     return GetTestEachMs();
                 case PROPERTIES.AVERAGE_WINDOW:
                     return GetAverageWindow();
-                case PROPERTIES.SERVER:
-                    return GetServer();
+                case PROPERTIES.AVERAGE_TYPE:
+                    return GetAverageType();
+                case PROPERTIES.SERVERS:
+                    return GetServers();
             }
             
             throw new ArgumentException("No gettable field named " + fieldName);
@@ -376,6 +464,13 @@ namespace InternetConnectionMonitor
                     SetFailThresholdMs((int) value);
                     
                     break;
+                case PROPERTIES.ZENER_FACTOR:
+                    if (!(value is double))
+                        throw new ArgumentException(fieldName + " must be of type double");
+                        
+                    SetZenerFactor((double) value);
+                    
+                    break;
                 case PROPERTIES.TIMEOUT_MS:
                     if (!(value is int))
                         throw new ArgumentException(fieldName + " must be of type int");
@@ -397,11 +492,18 @@ namespace InternetConnectionMonitor
                     SetAverageWindow((int) value);
                     
                     break;
-                case PROPERTIES.SERVER:
+                case PROPERTIES.AVERAGE_TYPE:
+                    if (!(value is int))
+                        throw new ArgumentException(fieldName + " must be of type int");
+                        
+                    SetAverageType((int) value);
+                    
+                    break;
+                case PROPERTIES.SERVERS:
                     if (!(value is string))
                         throw new ArgumentException(fieldName + " must be of type string");
                         
-                    SetServer((string) value);
+                    SetServers((string) value);
                     
                     break;
             }
@@ -414,10 +516,12 @@ namespace InternetConnectionMonitor
             Bytes = other.Bytes;
             ProblemThresholdMs = other.ProblemThresholdMs;
             FailThresholdMs = other.FailThresholdMs;
+            ZenerFactor = other.ZenerFactor;
             TimeoutMs = other.TimeoutMs;
             TestEachMs = other.TestEachMs;
             AverageWindow = other.AverageWindow;
-            Server = other.Server;
+            AverageType = other.AverageType;
+            Servers = other.Servers;
         }
         
         #endregion

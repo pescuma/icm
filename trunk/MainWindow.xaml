@@ -6,7 +6,7 @@
         Topmost="True" SizeToContent="WidthAndHeight" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignHeight="205" d:DesignWidth="112" 
         MouseLeftButtonDown="OnMouseLeftButtonDown" MouseLeftButtonUp="OnMouseLeftButtonUp" 
         MouseMove="OnMouseMove" 
-        MouseRightButtonDown="OnMouseRightButtonDown" MouseRightButtonUp="OnMouseRightButtonUp" Focusable="False">
+        MouseRightButtonDown="OnMouseRightButtonDown" MouseRightButtonUp="OnMouseRightButtonUp" Focusable="False" MouseDoubleClick="OnMouseDoubleClick">
     
     <Image Name="Img" Stretch="Fill" />
     

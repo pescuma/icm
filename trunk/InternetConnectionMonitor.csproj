@@ -70,6 +70,7 @@
       <DependentUpon>model.ms</DependentUpon>
     </Compile>
     <Compile Include="Configuration.cs" />
+    <Compile Include="GrowlNotifier.cs" />
     <Compile Include="HistoricalAverageCalculator.cs" />
     <Compile Include="IAverageCalculator.cs" />
     <Compile Include="Pinger.cs" />

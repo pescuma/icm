@@ -26,6 +26,11 @@ namespace InternetConnectionMonitor
 			}
 		}
 
+		public int SampleSize
+		{
+			get { return numEntries; }
+		}
+
 		public double Average
 		{
 			get { return average; }

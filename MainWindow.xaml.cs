@@ -4,8 +4,6 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Growl.Connector;
-using Application = Growl.Connector.Application;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Point = System.Windows.Point;
 
@@ -13,14 +11,11 @@ namespace InternetConnectionMonitor
 {
 	public partial class MainWindow : Window
 	{
-		private const string APP_NAME = "Internet Connection Monitor";
-		private const string GROWL_GOOD = "GOOD";
-		private const string GROWL_PROBLEM = "PROBLEM";
-		private const string GROWL_FAIL = "FAIL";
+		public const string APP_NAME = "Internet Connection Monitor";
 
 		private readonly Presenter presenter = new Presenter();
 		private NotifyIcon trayIcon;
-		private GrowlConnector growl;
+		private GrowlNotifier growlNofier;
 
 		private bool moving;
 		private Vector toCenter;
@@ -33,7 +28,7 @@ namespace InternetConnectionMonitor
 
 			InitTray();
 
-			InitGrowl();
+			growlNofier = new GrowlNotifier(presenter);
 
 			LocationChanged += delegate { StoreWindowPosition(); };
 			SizeChanged += delegate { StoreWindowPosition(); };
@@ -44,51 +39,7 @@ namespace InternetConnectionMonitor
 			                             			UpdateImage();
 			                             		if (e.PropertyName == BasePresenter.PROPERTIES.TRAY_IMAGE)
 			                             			UpdateTray();
-			                             		if (e.PropertyName == BasePresenter.PROPERTIES.CURRENT_QUALITY)
-			                             			UpdateGrowl();
 			                             	};
-		}
-
-		private void InitGrowl()
-		{
-			growl = new GrowlConnector();
-
-			Application app = new Application(APP_NAME);
-			app.Icon = presenter.GetGrowlAppImage();
-
-			NotificationType good = new NotificationType(GROWL_GOOD, presenter.GetGrowlGoodName());
-			good.Icon = presenter.GetGrowlGoodImage();
-
-			NotificationType problem = new NotificationType(GROWL_PROBLEM, presenter.GetGrowlProblemName());
-			problem.Icon = presenter.GetGrowlProblemImage();
-
-			NotificationType fail = new NotificationType(GROWL_FAIL, presenter.GetGrowFailName());
-			fail.Icon = presenter.GetGrowlFailImage();
-
-			growl.Register(app, new[] {good, problem, fail});
-		}
-
-		private void UpdateGrowl()
-		{
-			Notification notification = new Notification(APP_NAME, GetGrowlNotificaionName(), null,
-			                                             presenter.GetGrowlTitle(), presenter.GetGrowlText(),
-			                                             presenter.GetGrowlImage(), false, Priority.Normal,
-			                                             null);
-			growl.Notify(notification);
-		}
-
-		private string GetGrowlNotificaionName()
-		{
-			switch (presenter.CurrentQuality)
-			{
-				case Quality.Good:
-					return GROWL_GOOD;
-				case Quality.Problem:
-					return GROWL_PROBLEM;
-				case Quality.Fail:
-					return GROWL_FAIL;
-			}
-			throw new Exception();
 		}
 
 		private void InitPosition()
@@ -129,11 +80,11 @@ namespace InternetConnectionMonitor
 			showHide.Click += delegate { ShowHide(); };
 			trayIcon.ContextMenu.MenuItems.Add(showHide);
 
-			trayIcon.ContextMenu.MenuItems.Add("Show &Information", delegate { ShowBalloon(); });
+			trayIcon.ContextMenu.MenuItems.Add("Show &Information", delegate { ShowInformation(); });
 			trayIcon.ContextMenu.MenuItems.Add("-");
 			trayIcon.ContextMenu.MenuItems.Add("E&xit", delegate { Close(); });
 
-			trayIcon.DoubleClick += delegate { ShowBalloon(); };
+			trayIcon.DoubleClick += delegate { ShowInformation(); };
 
 			UpdateTray();
 		}
@@ -158,10 +109,12 @@ namespace InternetConnectionMonitor
 			Properties.Settings.Default.Save();
 		}
 
-		private void ShowBalloon()
+		private void ShowInformation()
 		{
-			trayIcon.ShowBalloonTip(2000, presenter.GetBalloonTitle(), presenter.GetBalloonText(),
-			                        GetBalloonIcon());
+			if (growlNofier.IsConnected)
+				growlNofier.ShowInformation();
+			else
+				trayIcon.ShowBalloonTip(2000, presenter.GetQualityStateTitle(), presenter.GetQualityStateText(), GetBalloonIcon());
 		}
 
 		private ToolTipIcon GetBalloonIcon()
@@ -329,6 +282,11 @@ namespace InternetConnectionMonitor
 
 		private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
+		}
+
+		private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			ShowInformation();
 		}
 
 		private BitmapImage LoadImage(string imageFullPath)

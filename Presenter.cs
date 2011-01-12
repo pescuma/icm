@@ -14,7 +14,11 @@ namespace InternetConnectionMonitor
 
 		public Presenter()
 		{
-			avg = new AverageCalculator(Config.AverageWindow);
+			if (Config.AverageType == 1)
+				avg = new HistoricalAverageCalculator(Config.AverageWindow);
+			else
+				avg = new AverageCalculator(Config.AverageWindow);
+
 			pinger = new Pinger(Config, OnPingCompleted);
 			pinger.Start();
 
@@ -62,98 +66,61 @@ namespace InternetConnectionMonitor
 			AvgPingTimeMs = (int) avg.Average;
 			CurrentQuality = ComputeQuality(AvgPingTimeMs);
 
-			Console.WriteLine("AVG: " + AvgPingTimeMs + " -> " + CurrentQuality);
+			Console.WriteLine(string.Format("Ping: {0:0000} -> avg = {1:0000} -> {2}", dt, AvgPingTimeMs, CurrentQuality));
 		}
 
 		private Quality ComputeQuality(int pingTime)
 		{
-			if (pingTime <= Config.ProblemThresholdMs)
+			int problemThresholdMs;
+			int failThresholdMs;
+
+			// Avoid switching too much when closer to the border
+			switch (CurrentQuality)
+			{
+				case Quality.Good:
+					problemThresholdMs = (int) (Config.ProblemThresholdMs + Config.ZenerFactor * Config.ProblemThresholdMs);
+					failThresholdMs = Config.FailThresholdMs;
+					break;
+				case Quality.Problem:
+					problemThresholdMs = (int) (Config.ProblemThresholdMs - Config.ZenerFactor * Config.ProblemThresholdMs);
+					failThresholdMs = (int) (Config.FailThresholdMs + Config.ZenerFactor * (Config.FailThresholdMs - Config.ProblemThresholdMs));
+					break;
+				case Quality.Fail:
+					problemThresholdMs = Config.ProblemThresholdMs;
+					failThresholdMs = (int) (Config.FailThresholdMs - Config.ZenerFactor * (Config.FailThresholdMs - Config.ProblemThresholdMs));
+					break;
+				default:
+					throw new Exception();
+			}
+
+			if (pingTime <= problemThresholdMs)
 				return Quality.Good;
-			else if (pingTime <= Config.FailThresholdMs)
+			else if (pingTime <= failThresholdMs)
 				return Quality.Problem;
 			else
 				return Quality.Fail;
 		}
 
-		public string GetBalloonTitle()
+		public string GetQualityStateTitle()
 		{
 			switch (CurrentQuality)
 			{
 				case Quality.Good:
 					return "Internet connection is good";
 				case Quality.Problem:
-					return "Internet connection has some problem";
+					return "Internet connection has some problems";
 				case Quality.Fail:
 					return "No internet connection";
 			}
 			throw new Exception();
 		}
 
-		public string GetBalloonText()
+		public string GetQualityStateText()
 		{
 			return "Average ping time: " + AvgPingTimeMs + " ms";
 		}
 
-		public string GetGrowFailName()
-		{
-			return "Lost connection";
-		}
-
-		public string GetGrowlProblemName()
-		{
-			return "Problems";
-		}
-
-		public string GetGrowlGoodName()
-		{
-			return "Good connection";
-		}
-
-		public string GetGrowlTitle()
-		{
-			switch (CurrentQuality)
-			{
-				case Quality.Good:
-					return "Internet connection is now good";
-				case Quality.Problem:
-					return "Internet connection started having problems";
-				case Quality.Fail:
-					return "Lost internet connection";
-			}
-			throw new Exception();
-		}
-
-		public string GetGrowlAppImage()
-		{
-			return GetFullResourcePath("Growl_App.png");
-		}
-
-		public string GetGrowlImage()
-		{
-			return GetFullResourcePath("Growl_" + CurrentQuality + ".png");
-		}
-
-		public string GetGrowlGoodImage()
-		{
-			return GetFullResourcePath("Growl_" + Quality.Good + ".png");
-		}
-
-		public string GetGrowlProblemImage()
-		{
-			return GetFullResourcePath("Growl_" + Quality.Problem + ".png");
-		}
-
-		public string GetGrowlFailImage()
-		{
-			return GetFullResourcePath("Growl_" + Quality.Fail + ".png");
-		}
-
-		public string GetGrowlText()
-		{
-			return GetBalloonText();
-		}
-
-		private string GetFullResourcePath(string filename)
+		public string GetFullResourcePath(string filename)
 		{
 			var exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
 			if (exePath == null)
@@ -166,6 +133,11 @@ namespace InternetConnectionMonitor
 			result = Path.GetFullPath(result);
 
 			return result;
+		}
+
+		public bool NotificationsEnabled
+		{
+			get { return avg.SampleSize == avg.WindowSize; }
 		}
 	}
 }

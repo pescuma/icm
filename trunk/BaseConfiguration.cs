@@ -16,15 +16,19 @@ namespace InternetConnectionMonitor
         
         public class PROPERTIES
         {
+            public const string SERVERS = "Servers";
             public const string BYTES = "Bytes";
             public const string PROBLEM_THRESHOLD_MS = "ProblemThresholdMs";
             public const string FAIL_THRESHOLD_MS = "FailThresholdMs";
-            public const string ZENER_FACTOR = "ZenerFactor";
             public const string TIMEOUT_MS = "TimeoutMs";
             public const string TEST_EACH_MS = "TestEachMs";
+            public const string ZENER_FACTOR = "ZenerFactor";
             public const string AVERAGE_WINDOW = "AverageWindow";
             public const string AVERAGE_TYPE = "AverageType";
-            public const string SERVERS = "Servers";
+            public const string GAUSSIAN_AVERAGE_SIGMA = "GaussianAverageSigma";
+            public const string GAUSSIAN_AVERAGE_GUESS_WINDOW = "GaussianAverageGuessWindow";
+            public const string GROWL_SERVER = "GrowlServer";
+            public const string GROWL_PASSWORD = "GrowlPassword";
         }
         
         #endregion
@@ -33,35 +37,80 @@ namespace InternetConnectionMonitor
         
         public BaseConfiguration()
         {
+            _servers = "8.8.8.8\n8.8.4.4";
             _bytes = 8;
             _problemThresholdMs = 300;
             _failThresholdMs = 1000;
-            _zenerFactor = 0.2;
             _timeoutMs = 1500;
-            _testEachMs = 5000;
+            _testEachMs = 2000;
+            _zenerFactor = 0.2;
             _averageWindow = 6;
-            _averageType = 0;
-            _servers = "8.8.8.8\n8.8.4.4";
+            _averageType = 2;
+            _gaussianAverageSigma = 1;
+            _gaussianAverageGuessWindow = 2;
         }
         
         public BaseConfiguration(BaseConfiguration other)
         {
+            _servers = other.Servers;
             _bytes = other.Bytes;
             _problemThresholdMs = other.ProblemThresholdMs;
             _failThresholdMs = other.FailThresholdMs;
-            _zenerFactor = other.ZenerFactor;
             _timeoutMs = other.TimeoutMs;
             _testEachMs = other.TestEachMs;
+            _zenerFactor = other.ZenerFactor;
             _averageWindow = other.AverageWindow;
             _averageType = other.AverageType;
-            _servers = other.Servers;
+            _gaussianAverageSigma = other.GaussianAverageSigma;
+            _gaussianAverageGuessWindow = other.GaussianAverageGuessWindow;
+            _growlServer = other.GrowlServer;
+            _growlPassword = other.GrowlPassword;
+        }
+        
+        #endregion
+        
+        #region Property Servers
+        
+        [DataMember(Name = "Servers", Order = 0, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _servers;
+        
+        public string Servers
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetServers();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetServers(value);
+            }
+        }
+        
+        protected virtual string GetServers()
+        {
+            return _servers;
+        }
+        
+        protected virtual bool SetServers(string servers)
+        {
+            if (_servers == servers)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.SERVERS);
+            
+            _servers = servers;
+            
+            NotifyPropertyChanged(PROPERTIES.SERVERS);
+            
+            return true;
         }
         
         #endregion
         
         #region Property Bytes
         
-        [DataMember(Name = "Bytes", Order = 0, IsRequired = false)]
+        [DataMember(Name = "Bytes", Order = 1, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _bytes;
         
@@ -100,7 +149,7 @@ namespace InternetConnectionMonitor
         
         #region Property ProblemThresholdMs
         
-        [DataMember(Name = "ProblemThresholdMs", Order = 1, IsRequired = false)]
+        [DataMember(Name = "ProblemThresholdMs", Order = 2, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _problemThresholdMs;
         
@@ -139,7 +188,7 @@ namespace InternetConnectionMonitor
         
         #region Property FailThresholdMs
         
-        [DataMember(Name = "FailThresholdMs", Order = 2, IsRequired = false)]
+        [DataMember(Name = "FailThresholdMs", Order = 3, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _failThresholdMs;
         
@@ -170,45 +219,6 @@ namespace InternetConnectionMonitor
             _failThresholdMs = failThresholdMs;
             
             NotifyPropertyChanged(PROPERTIES.FAIL_THRESHOLD_MS);
-            
-            return true;
-        }
-        
-        #endregion
-        
-        #region Property ZenerFactor
-        
-        [DataMember(Name = "ZenerFactor", Order = 3, IsRequired = false)]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private double _zenerFactor;
-        
-        public double ZenerFactor
-        {
-            [DebuggerStepThrough]
-            get {
-                return GetZenerFactor();
-            }
-            [DebuggerStepThrough]
-            set {
-                SetZenerFactor(value);
-            }
-        }
-        
-        protected virtual double GetZenerFactor()
-        {
-            return _zenerFactor;
-        }
-        
-        protected virtual bool SetZenerFactor(double zenerFactor)
-        {
-            if (_zenerFactor == zenerFactor)
-                return false;
-                
-            NotifyPropertyChanging(PROPERTIES.ZENER_FACTOR);
-            
-            _zenerFactor = zenerFactor;
-            
-            NotifyPropertyChanged(PROPERTIES.ZENER_FACTOR);
             
             return true;
         }
@@ -293,9 +303,48 @@ namespace InternetConnectionMonitor
         
         #endregion
         
+        #region Property ZenerFactor
+        
+        [DataMember(Name = "ZenerFactor", Order = 6, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private double _zenerFactor;
+        
+        public double ZenerFactor
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetZenerFactor();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetZenerFactor(value);
+            }
+        }
+        
+        protected virtual double GetZenerFactor()
+        {
+            return _zenerFactor;
+        }
+        
+        protected virtual bool SetZenerFactor(double zenerFactor)
+        {
+            if (_zenerFactor == zenerFactor)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.ZENER_FACTOR);
+            
+            _zenerFactor = zenerFactor;
+            
+            NotifyPropertyChanged(PROPERTIES.ZENER_FACTOR);
+            
+            return true;
+        }
+        
+        #endregion
+        
         #region Property AverageWindow
         
-        [DataMember(Name = "AverageWindow", Order = 6, IsRequired = false)]
+        [DataMember(Name = "AverageWindow", Order = 7, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _averageWindow;
         
@@ -334,7 +383,7 @@ namespace InternetConnectionMonitor
         
         #region Property AverageType
         
-        [DataMember(Name = "AverageType", Order = 7, IsRequired = false)]
+        [DataMember(Name = "AverageType", Order = 8, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _averageType;
         
@@ -371,39 +420,156 @@ namespace InternetConnectionMonitor
         
         #endregion
         
-        #region Property Servers
+        #region Property GaussianAverageSigma
         
-        [DataMember(Name = "Servers", Order = 8, IsRequired = false)]
+        [DataMember(Name = "GaussianAverageSigma", Order = 9, IsRequired = false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string _servers;
+        private double _gaussianAverageSigma;
         
-        public string Servers
+        public double GaussianAverageSigma
         {
             [DebuggerStepThrough]
             get {
-                return GetServers();
+                return GetGaussianAverageSigma();
             }
             [DebuggerStepThrough]
             set {
-                SetServers(value);
+                SetGaussianAverageSigma(value);
             }
         }
         
-        protected virtual string GetServers()
+        protected virtual double GetGaussianAverageSigma()
         {
-            return _servers;
+            return _gaussianAverageSigma;
         }
         
-        protected virtual bool SetServers(string servers)
+        protected virtual bool SetGaussianAverageSigma(double gaussianAverageSigma)
         {
-            if (_servers == servers)
+            if (_gaussianAverageSigma == gaussianAverageSigma)
                 return false;
                 
-            NotifyPropertyChanging(PROPERTIES.SERVERS);
+            NotifyPropertyChanging(PROPERTIES.GAUSSIAN_AVERAGE_SIGMA);
             
-            _servers = servers;
+            _gaussianAverageSigma = gaussianAverageSigma;
             
-            NotifyPropertyChanged(PROPERTIES.SERVERS);
+            NotifyPropertyChanged(PROPERTIES.GAUSSIAN_AVERAGE_SIGMA);
+            
+            return true;
+        }
+        
+        #endregion
+        
+        #region Property GaussianAverageGuessWindow
+        
+        [DataMember(Name = "GaussianAverageGuessWindow", Order = 10, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private int _gaussianAverageGuessWindow;
+        
+        public int GaussianAverageGuessWindow
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetGaussianAverageGuessWindow();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetGaussianAverageGuessWindow(value);
+            }
+        }
+        
+        protected virtual int GetGaussianAverageGuessWindow()
+        {
+            return _gaussianAverageGuessWindow;
+        }
+        
+        protected virtual bool SetGaussianAverageGuessWindow(int gaussianAverageGuessWindow)
+        {
+            if (_gaussianAverageGuessWindow == gaussianAverageGuessWindow)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.GAUSSIAN_AVERAGE_GUESS_WINDOW);
+            
+            _gaussianAverageGuessWindow = gaussianAverageGuessWindow;
+            
+            NotifyPropertyChanged(PROPERTIES.GAUSSIAN_AVERAGE_GUESS_WINDOW);
+            
+            return true;
+        }
+        
+        #endregion
+        
+        #region Property GrowlServer
+        
+        [DataMember(Name = "GrowlServer", Order = 11, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _growlServer;
+        
+        public string GrowlServer
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetGrowlServer();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetGrowlServer(value);
+            }
+        }
+        
+        protected virtual string GetGrowlServer()
+        {
+            return _growlServer;
+        }
+        
+        protected virtual bool SetGrowlServer(string growlServer)
+        {
+            if (_growlServer == growlServer)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.GROWL_SERVER);
+            
+            _growlServer = growlServer;
+            
+            NotifyPropertyChanged(PROPERTIES.GROWL_SERVER);
+            
+            return true;
+        }
+        
+        #endregion
+        
+        #region Property GrowlPassword
+        
+        [DataMember(Name = "GrowlPassword", Order = 12, IsRequired = false)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _growlPassword;
+        
+        public string GrowlPassword
+        {
+            [DebuggerStepThrough]
+            get {
+                return GetGrowlPassword();
+            }
+            [DebuggerStepThrough]
+            set {
+                SetGrowlPassword(value);
+            }
+        }
+        
+        protected virtual string GetGrowlPassword()
+        {
+            return _growlPassword;
+        }
+        
+        protected virtual bool SetGrowlPassword(string growlPassword)
+        {
+            if (_growlPassword == growlPassword)
+                return false;
+                
+            NotifyPropertyChanging(PROPERTIES.GROWL_PASSWORD);
+            
+            _growlPassword = growlPassword;
+            
+            NotifyPropertyChanged(PROPERTIES.GROWL_PASSWORD);
             
             return true;
         }
@@ -416,24 +582,32 @@ namespace InternetConnectionMonitor
         {
             switch (fieldName)
             {
+                case PROPERTIES.SERVERS:
+                    return GetServers();
                 case PROPERTIES.BYTES:
                     return GetBytes();
                 case PROPERTIES.PROBLEM_THRESHOLD_MS:
                     return GetProblemThresholdMs();
                 case PROPERTIES.FAIL_THRESHOLD_MS:
                     return GetFailThresholdMs();
-                case PROPERTIES.ZENER_FACTOR:
-                    return GetZenerFactor();
                 case PROPERTIES.TIMEOUT_MS:
                     return GetTimeoutMs();
                 case PROPERTIES.TEST_EACH_MS:
                     return GetTestEachMs();
+                case PROPERTIES.ZENER_FACTOR:
+                    return GetZenerFactor();
                 case PROPERTIES.AVERAGE_WINDOW:
                     return GetAverageWindow();
                 case PROPERTIES.AVERAGE_TYPE:
                     return GetAverageType();
-                case PROPERTIES.SERVERS:
-                    return GetServers();
+                case PROPERTIES.GAUSSIAN_AVERAGE_SIGMA:
+                    return GetGaussianAverageSigma();
+                case PROPERTIES.GAUSSIAN_AVERAGE_GUESS_WINDOW:
+                    return GetGaussianAverageGuessWindow();
+                case PROPERTIES.GROWL_SERVER:
+                    return GetGrowlServer();
+                case PROPERTIES.GROWL_PASSWORD:
+                    return GetGrowlPassword();
             }
             
             throw new ArgumentException("No gettable field named " + fieldName);
@@ -443,6 +617,13 @@ namespace InternetConnectionMonitor
         {
             switch (fieldName)
             {
+                case PROPERTIES.SERVERS:
+                    if (!(value is string))
+                        throw new ArgumentException(fieldName + " must be of type string");
+                        
+                    SetServers((string) value);
+                    
+                    break;
                 case PROPERTIES.BYTES:
                     if (!(value is int))
                         throw new ArgumentException(fieldName + " must be of type int");
@@ -464,13 +645,6 @@ namespace InternetConnectionMonitor
                     SetFailThresholdMs((int) value);
                     
                     break;
-                case PROPERTIES.ZENER_FACTOR:
-                    if (!(value is double))
-                        throw new ArgumentException(fieldName + " must be of type double");
-                        
-                    SetZenerFactor((double) value);
-                    
-                    break;
                 case PROPERTIES.TIMEOUT_MS:
                     if (!(value is int))
                         throw new ArgumentException(fieldName + " must be of type int");
@@ -483,6 +657,13 @@ namespace InternetConnectionMonitor
                         throw new ArgumentException(fieldName + " must be of type int");
                         
                     SetTestEachMs((int) value);
+                    
+                    break;
+                case PROPERTIES.ZENER_FACTOR:
+                    if (!(value is double))
+                        throw new ArgumentException(fieldName + " must be of type double");
+                        
+                    SetZenerFactor((double) value);
                     
                     break;
                 case PROPERTIES.AVERAGE_WINDOW:
@@ -499,11 +680,32 @@ namespace InternetConnectionMonitor
                     SetAverageType((int) value);
                     
                     break;
-                case PROPERTIES.SERVERS:
+                case PROPERTIES.GAUSSIAN_AVERAGE_SIGMA:
+                    if (!(value is double))
+                        throw new ArgumentException(fieldName + " must be of type double");
+                        
+                    SetGaussianAverageSigma((double) value);
+                    
+                    break;
+                case PROPERTIES.GAUSSIAN_AVERAGE_GUESS_WINDOW:
+                    if (!(value is int))
+                        throw new ArgumentException(fieldName + " must be of type int");
+                        
+                    SetGaussianAverageGuessWindow((int) value);
+                    
+                    break;
+                case PROPERTIES.GROWL_SERVER:
                     if (!(value is string))
                         throw new ArgumentException(fieldName + " must be of type string");
                         
-                    SetServers((string) value);
+                    SetGrowlServer((string) value);
+                    
+                    break;
+                case PROPERTIES.GROWL_PASSWORD:
+                    if (!(value is string))
+                        throw new ArgumentException(fieldName + " must be of type string");
+                        
+                    SetGrowlPassword((string) value);
                     
                     break;
             }
@@ -513,15 +715,19 @@ namespace InternetConnectionMonitor
         
         public void CopyFrom(Configuration other)
         {
+            Servers = other.Servers;
             Bytes = other.Bytes;
             ProblemThresholdMs = other.ProblemThresholdMs;
             FailThresholdMs = other.FailThresholdMs;
-            ZenerFactor = other.ZenerFactor;
             TimeoutMs = other.TimeoutMs;
             TestEachMs = other.TestEachMs;
+            ZenerFactor = other.ZenerFactor;
             AverageWindow = other.AverageWindow;
             AverageType = other.AverageType;
-            Servers = other.Servers;
+            GaussianAverageSigma = other.GaussianAverageSigma;
+            GaussianAverageGuessWindow = other.GaussianAverageGuessWindow;
+            GrowlServer = other.GrowlServer;
+            GrowlPassword = other.GrowlPassword;
         }
         
         #endregion

@@ -6,13 +6,15 @@ namespace InternetConnectionMonitor
 	internal class GrowlNotifier
 	{
 		private readonly Presenter presenter;
-		private readonly GrowlConnector growl = new GrowlConnector();
+		private readonly GrowlConnector growl;
 
 		public bool IsConnected { get; private set; }
 
 		public GrowlNotifier(Presenter presenter)
 		{
 			this.presenter = presenter;
+
+			growl = new GrowlConnector();
 
 			Application app = new Application(MainWindow.APP_NAME);
 			app.Icon = GetGrowlAppImage();
@@ -22,18 +24,14 @@ namespace InternetConnectionMonitor
 
 			var goodToProblem = new NotificationType(ID(Quality.Good, Quality.Problem), "Good to problems");
 			goodToProblem.Icon = GetGrowlImage(Quality.Problem);
-
-			var goodToFail = new NotificationType(ID(Quality.Good, Quality.Fail), "Good to no connection");
-			goodToFail.Icon = GetGrowlImage(Quality.Fail);
+			goodToProblem.Enabled = false;
 
 			var problemToGood = new NotificationType(ID(Quality.Problem, Quality.Good), "Problems to good");
 			problemToGood.Icon = GetGrowlImage(Quality.Good);
+			goodToProblem.Enabled = false;
 
 			var problemToFail = new NotificationType(ID(Quality.Problem, Quality.Fail), "Problems to no connection");
 			problemToFail.Icon = GetGrowlImage(Quality.Fail);
-
-			var failToGood = new NotificationType(ID(Quality.Fail, Quality.Good), "No connection to good");
-			failToGood.Icon = GetGrowlImage(Quality.Good);
 
 			var failToProblem = new NotificationType(ID(Quality.Fail, Quality.Problem), "No connection to problems");
 			failToProblem.Icon = GetGrowlImage(Quality.Problem);
@@ -45,7 +43,8 @@ namespace InternetConnectionMonitor
 			                       			return;
 			                       		IsConnected = false;
 			                       	};
-			growl.Register(app, new[] {info, goodToProblem, goodToFail, problemToGood, problemToFail, failToGood, failToProblem});
+
+			growl.Register(app, new[] {info, goodToProblem, problemToGood, problemToFail, failToProblem});
 
 			var oldVal = new Quality[1];
 			presenter.PropertyChanging += (s, e) =>
@@ -81,7 +80,7 @@ namespace InternetConnectionMonitor
 			if (!presenter.NotificationsEnabled)
 				return;
 
-			Notification notification = new Notification(MainWindow.APP_NAME, old + "_TO_" + current, null, GetTitle(old, current), presenter.GetQualityStateText());
+			Notification notification = new Notification(MainWindow.APP_NAME, old + "_TO_" + current, null, GetTitle(old, current), presenter.GetQualityStateInfo());
 			growl.Notify(notification);
 		}
 
@@ -90,18 +89,17 @@ namespace InternetConnectionMonitor
 			var id = ID(old, current);
 
 			if (id == ID(Quality.Good, Quality.Problem)) return "Connection is having problems";
-			if (id == ID(Quality.Good, Quality.Fail)) return "Lost connection";
 			if (id == ID(Quality.Problem, Quality.Good)) return "Connection is fine again";
-			if (id == ID(Quality.Problem, Quality.Fail)) return "Lost connection (had problems)";
-			if (id == ID(Quality.Fail, Quality.Good)) return "Internet recovered";
-			if (id == ID(Quality.Fail, Quality.Problem)) return "Internet recovered but is problematic";
+			if (id == ID(Quality.Problem, Quality.Fail)) return "Lost connection";
+			if (id == ID(Quality.Fail, Quality.Problem)) return "Connection recovered";
 
 			throw new Exception();
 		}
 
 		public void ShowInformation()
 		{
-			Notification notification = new Notification(MainWindow.APP_NAME, "INFO", null, presenter.GetQualityStateTitle(), presenter.GetQualityStateText(), GetGrowlImage(presenter.CurrentQuality), false, Priority.Normal, null);
+			Notification notification = new Notification(MainWindow.APP_NAME, "INFO", null, presenter.GetQualityStateTitle(), presenter.GetQualityStateInfo());
+			notification.Icon = GetGrowlImage(presenter.CurrentQuality);
 			growl.Notify(notification);
 		}
 	}

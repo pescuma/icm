@@ -26,9 +26,9 @@ namespace InternetConnectionMonitor
 			}
 		}
 
-		public int SampleSize
+		public bool WindowIsFull
 		{
-			get { return numEntries; }
+			get { return numEntries == windowSize; }
 		}
 
 		public double Average

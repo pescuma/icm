@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using AppLimit.NetSparkle;
 using Point = System.Windows.Point;
 
 namespace InternetConnectionMonitor
@@ -13,8 +13,10 @@ namespace InternetConnectionMonitor
 	{
 		public const string APP_NAME = "Internet Connection Monitor";
 
+		private Sparkle sparkle;
+
 		private readonly Presenter presenter = new Presenter();
-		private NotifyIcon trayIcon;
+		private System.Windows.Forms.NotifyIcon trayIcon;
 		private GrowlNotifier growlNofier;
 
 		private bool moving;
@@ -24,9 +26,17 @@ namespace InternetConnectionMonitor
 		{
 			InitializeComponent();
 
+#if DEBUG
+			sparkle = new Sparkle("http://icm.googlecode.com/svn-history/updater/versioninfo.xaml", false);
+#else
+			sparkle = new Sparkle("http://icm.googlecode.com/svn-history/updater/versioninfo.xaml");
+#endif
+
 			InitPosition();
 
 			InitTray();
+
+			InitContextMenu();
 
 			growlNofier = new GrowlNotifier(presenter);
 
@@ -68,19 +78,21 @@ namespace InternetConnectionMonitor
 
 		private void InitTray()
 		{
-			trayIcon = new NotifyIcon();
+			trayIcon = new System.Windows.Forms.NotifyIcon();
 			trayIcon.Text = APP_NAME;
 			trayIcon.Visible = true;
 
-			trayIcon.ContextMenu = new ContextMenu();
+			trayIcon.ContextMenu = new System.Windows.Forms.ContextMenu();
 
-			var showHide = new MenuItem();
+			var showHide = new System.Windows.Forms.MenuItem();
 			showHide.DefaultItem = true;
 			showHide.Text = "Show / Hide";
 			showHide.Click += delegate { ShowHide(); };
 			trayIcon.ContextMenu.MenuItems.Add(showHide);
 
 			trayIcon.ContextMenu.MenuItems.Add("Show &Information", delegate { ShowInformation(); });
+			trayIcon.ContextMenu.MenuItems.Add("-");
+			trayIcon.ContextMenu.MenuItems.Add("&Options...", delegate { ShowOptions(); });
 			trayIcon.ContextMenu.MenuItems.Add("-");
 			trayIcon.ContextMenu.MenuItems.Add("E&xit", delegate { Close(); });
 
@@ -92,6 +104,33 @@ namespace InternetConnectionMonitor
 		private void UpdateTray()
 		{
 			trayIcon.Icon = new Icon(presenter.TrayImage);
+		}
+
+		private void InitContextMenu()
+		{
+			ContextMenu menu = new ContextMenu();
+
+			MenuItem menuItem = new MenuItem {Header = "Show / Hide"};
+			menuItem.Click += delegate { ShowHide(); };
+			menu.Items.Add(menuItem);
+
+			menuItem = new MenuItem {Header = "Show _Information"};
+			menuItem.Click += delegate { ShowInformation(); };
+			menu.Items.Add(menuItem);
+
+			menu.Items.Add(new Separator());
+
+			menuItem = new MenuItem {Header = "_Options..."};
+			menuItem.Click += delegate { ShowOptions(); };
+			menu.Items.Add(menuItem);
+
+			menu.Items.Add(new Separator());
+
+			menuItem = new MenuItem {Header = "E_xit"};
+			menuItem.Click += delegate { Close(); };
+			menu.Items.Add(menuItem);
+
+			ContextMenu = menu;
 		}
 
 		private void StoreWindowPosition()
@@ -114,19 +153,19 @@ namespace InternetConnectionMonitor
 			if (growlNofier.IsConnected)
 				growlNofier.ShowInformation();
 			else
-				trayIcon.ShowBalloonTip(2000, presenter.GetQualityStateTitle(), presenter.GetQualityStateText(), GetBalloonIcon());
+				trayIcon.ShowBalloonTip(2000, presenter.GetQualityStateTitle(), presenter.GetQualityStateInfo(), GetBalloonIcon());
 		}
 
-		private ToolTipIcon GetBalloonIcon()
+		private System.Windows.Forms.ToolTipIcon GetBalloonIcon()
 		{
 			switch (presenter.CurrentQuality)
 			{
 				case Quality.Good:
-					return ToolTipIcon.Info;
+					return System.Windows.Forms.ToolTipIcon.Info;
 				case Quality.Problem:
-					return ToolTipIcon.Warning;
+					return System.Windows.Forms.ToolTipIcon.Warning;
 				case Quality.Fail:
-					return ToolTipIcon.Error;
+					return System.Windows.Forms.ToolTipIcon.Error;
 			}
 			throw new Exception();
 		}
@@ -276,14 +315,6 @@ namespace InternetConnectionMonitor
 			return ret;
 		}
 
-		private void OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-		{
-		}
-
-		private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-		{
-		}
-
 		private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			ShowInformation();
@@ -296,6 +327,19 @@ namespace InternetConnectionMonitor
 			img.UriSource = new Uri(imageFullPath, UriKind.Absolute);
 			img.EndInit();
 			return img;
+		}
+
+		private void ShowOptions()
+		{
+			Options options = new Options();
+			options.Owner = this;
+			options.DataContext = presenter.Config.Clone();
+
+			if (options.ShowDialog() ?? false)
+			{
+				presenter.Config.CopyFrom((Configuration) options.DataContext);
+				presenter.Config.GrowlPassword = options.GrowlPassword.Password;
+			}
 		}
 	}
 }

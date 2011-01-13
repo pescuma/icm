@@ -1,0 +1,89 @@
+﻿<Window x:Class="InternetConnectionMonitor.Options"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ex="http://schemas.pescuma.org/wpf-ex/2010/xaml"
+        Title="Options" Height="339" Width="418">
+
+	<Grid ex:Grid.Columns="*" ex:Grid.Rows="*,Auto" ex:Grid.CellSpacing="5" Margin="5">
+		<TabControl>
+			<TabItem Header="Ping">
+				<Grid ex:Grid.Columns="Auto,*" ex:Grid.CellSpacing="5">
+					<Label Content="Servers:
+(one per line)" />
+					<TextBox MinHeight="90" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+					         Text="{Binding Path=Servers}" />
+
+					<Label Content="Time between requests (ms):" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=TestEachMs}" />
+
+                    <Label Content="With problems threshold (ms):" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=ProblemThresholdMs}" />
+
+                    <Label Content="No connection threshold (ms):" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=FailThresholdMs}" />
+
+                    <Label Content="Time-out threshold (ms):" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=TimeoutMs}" />
+
+				</Grid>
+			</TabItem>
+
+			<TabItem Header="Notification">
+				<Grid ex:Grid.Columns="Auto,*" ex:Grid.CellSpacing="5">
+
+					<Label Grid.ColumnSpan="2">
+						<TextBlock Text="Notifications are created using Growl.
+If all settings are empty the growl versions installed in this machine will be used." TextWrapping="Wrap" />
+					</Label>
+
+					<Label Content="Server:" />
+                    <TextBox Text="{Binding Path=GrowlServer}" />
+
+					<Label Content="Password:" />
+                    <PasswordBox x:Name="GrowlPassword" />
+
+				</Grid>
+			</TabItem>
+
+			<TabItem Header="Advanced">
+				<GroupBox Header="Ping">
+					<Grid ex:Grid.Columns="Auto,*" ex:Grid.CellSpacing="5">
+						<Label Content="Bytes per request:" />
+                        <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=Bytes}" />
+
+						<Label Content="Average window:" />
+                        <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=AverageWindow}" />
+
+						<Label Content="Average type:" />
+                        <ComboBox SelectedIndex="{Binding Path=AverageType}">
+							<ComboBoxItem Content="Simple" />
+							<ComboBoxItem Content="Historical" />
+							<ComboBoxItem Content="Gaussian" />
+						</ComboBox>
+
+						<GroupBox Header="Gaussian average" Grid.ColumnSpan="2">
+							<Grid ex:Grid.Columns="Auto,*" ex:Grid.CellSpacing="5">
+								<Label Content="Sigma:" />
+                                <TextBox PreviewTextInput="DoublePreviewTextInput" Text="{Binding Path=GaussianAverageSigma}" />
+
+								<Label Content="Time-out threshold:" />
+                                <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=GaussianAverageGuessWindow}" />
+							</Grid>
+						</GroupBox>
+
+						<Label Content="Zener factor:" />
+                        <TextBox PreviewTextInput="DoublePreviewTextInput" Text="{Binding Path=ZenerFactor}" />
+					</Grid>
+				</GroupBox>
+			</TabItem>
+
+		</TabControl>
+
+		<Grid ex:Grid.Columns="Auto" HorizontalAlignment="Right">
+			<Grid ex:Grid.Columns="Auto,Auto" ex:Grid.CellSpacing="5">
+				<Button Content="   OK   " IsDefault="True" />
+				<Button Content="   Cancel   " IsCancel="True" />
+			</Grid>
+		</Grid>
+	</Grid>
+</Window>

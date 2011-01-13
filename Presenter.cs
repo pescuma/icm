@@ -14,10 +14,7 @@ namespace InternetConnectionMonitor
 
 		public Presenter()
 		{
-			if (Config.AverageType == 1)
-				avg = new HistoricalAverageCalculator(Config.AverageWindow);
-			else
-				avg = new AverageCalculator(Config.AverageWindow);
+			avg = CreateAverageCalculator();
 
 			pinger = new Pinger(Config, OnPingCompleted);
 			pinger.Start();
@@ -26,10 +23,25 @@ namespace InternetConnectionMonitor
 			PropertyChanged += NotifyDependentPropertyChanged;
 		}
 
+		private IAverageCalculator CreateAverageCalculator()
+		{
+			switch (Config.AverageType)
+			{
+				case 1:
+					return new HistoricalAverageCalculator(Config.AverageWindow);
+				case 2:
+					return new GaussianAverageCalculator(Config.AverageWindow, Config.GaussianAverageSigma, Config.GaussianAverageGuessWindow);
+				default:
+					return new AverageCalculator(Config.AverageWindow);
+			}
+		}
+
 		public Presenter(Presenter other)
 			: base(other)
 		{
 		}
+
+		public int LastPingTimeMs { get; private set; }
 
 		private void NotifyDependentPropertyChanging(object sender, PropertyChangingEventArgs e)
 		{
@@ -63,10 +75,11 @@ namespace InternetConnectionMonitor
 		{
 			avg.Add(dt);
 
+			LastPingTimeMs = dt;
 			AvgPingTimeMs = (int) avg.Average;
 			CurrentQuality = ComputeQuality(AvgPingTimeMs);
 
-			Console.WriteLine(string.Format("Ping: {0:0000} -> avg = {1:0000} -> {2}", dt, AvgPingTimeMs, CurrentQuality));
+			Console.WriteLine(string.Format("Ping: {0} -> avg = {1} -> {2}", dt == Config.TimeoutMs ? "----" : dt.ToString().PadLeft(4), AvgPingTimeMs.ToString().PadLeft(4), CurrentQuality));
 		}
 
 		private Quality ComputeQuality(int pingTime)
@@ -78,16 +91,16 @@ namespace InternetConnectionMonitor
 			switch (CurrentQuality)
 			{
 				case Quality.Good:
-					problemThresholdMs = (int) (Config.ProblemThresholdMs + Config.ZenerFactor * Config.ProblemThresholdMs);
-					failThresholdMs = Config.FailThresholdMs;
+					problemThresholdMs = Config.ProblemThresholdMs + ComputeZener(Config.ProblemThresholdMs);
+					failThresholdMs = Config.TimeoutMs;
 					break;
 				case Quality.Problem:
-					problemThresholdMs = (int) (Config.ProblemThresholdMs - Config.ZenerFactor * Config.ProblemThresholdMs);
-					failThresholdMs = (int) (Config.FailThresholdMs + Config.ZenerFactor * (Config.FailThresholdMs - Config.ProblemThresholdMs));
+					problemThresholdMs = Config.ProblemThresholdMs - ComputeZener(Config.ProblemThresholdMs);
+					failThresholdMs = Config.FailThresholdMs + ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs);
 					break;
 				case Quality.Fail:
-					problemThresholdMs = Config.ProblemThresholdMs;
-					failThresholdMs = (int) (Config.FailThresholdMs - Config.ZenerFactor * (Config.FailThresholdMs - Config.ProblemThresholdMs));
+					problemThresholdMs = -1;
+					failThresholdMs = Config.FailThresholdMs - ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs);
 					break;
 				default:
 					throw new Exception();
@@ -101,6 +114,14 @@ namespace InternetConnectionMonitor
 				return Quality.Fail;
 		}
 
+		private int ComputeZener(int threshold)
+		{
+			if (Config.ZenerFactor < 1)
+				return (int) (Config.ZenerFactor * threshold);
+			else
+				return (int) Config.ZenerFactor;
+		}
+
 		public string GetQualityStateTitle()
 		{
 			switch (CurrentQuality)
@@ -108,16 +129,17 @@ namespace InternetConnectionMonitor
 				case Quality.Good:
 					return "Internet connection is good";
 				case Quality.Problem:
-					return "Internet connection has some problems";
+					return "Internet connection is having problems";
 				case Quality.Fail:
 					return "No internet connection";
 			}
 			throw new Exception();
 		}
 
-		public string GetQualityStateText()
+		public string GetQualityStateInfo()
 		{
-			return "Average ping time: " + AvgPingTimeMs + " ms";
+			return "Average ping time: " + (AvgPingTimeMs == Config.TimeoutMs ? "no connection" : AvgPingTimeMs + "ms") + "\n" //
+			       + "Last ping time: " + (LastPingTimeMs == Config.TimeoutMs ? "timed out" : LastPingTimeMs + "ms");
 		}
 
 		public string GetFullResourcePath(string filename)
@@ -137,7 +159,7 @@ namespace InternetConnectionMonitor
 
 		public bool NotificationsEnabled
 		{
-			get { return avg.SampleSize == avg.WindowSize; }
+			get { return avg.WindowIsFull; }
 		}
 	}
 }

@@ -94,7 +94,7 @@ namespace InternetConnectionMonitor
 
 				int dt;
 				if (reply.Status == IPStatus.Success)
-					dt = (int) Math.Min(reply.RoundtripTime, config.TimeoutMs);
+					dt = (int) Math.Min(reply.RoundtripTime, config.TimeoutMs - 1);
 				else
 					dt = config.TimeoutMs;
 
@@ -107,7 +107,7 @@ namespace InternetConnectionMonitor
 		private void OnNewPingTime(int dt)
 		{
 			int pingDt = (int) (GetCurrentTickMs() - lastPing);
-			
+
 			//Console.WriteLine("time=" + dt + "ms  clock=" + pingDt + "ms");
 
 			Application.Current.Dispatcher.BeginInvoke((Action) delegate { callback(dt); });

@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AppLimit.NetSparkle">
+      <HintPath>lib\NetSparkle\AppLimit.NetSparkle.dll</HintPath>
+    </Reference>
     <Reference Include="Growl.Connector">
       <HintPath>lib\grow\Growl.Connector.dll</HintPath>
     </Reference>
@@ -56,6 +59,10 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="WPFEx">
+      <HintPath>lib\WPFEx.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -63,6 +70,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AverageCalculator.cs" />
+    <Compile Include="AverageType.cs" />
     <Compile Include="BaseConfiguration.cs">
       <DependentUpon>model.ms</DependentUpon>
     </Compile>
@@ -70,9 +78,13 @@
       <DependentUpon>model.ms</DependentUpon>
     </Compile>
     <Compile Include="Configuration.cs" />
+    <Compile Include="GaussianAverageCalculator.cs" />
     <Compile Include="GrowlNotifier.cs" />
     <Compile Include="HistoricalAverageCalculator.cs" />
     <Compile Include="IAverageCalculator.cs" />
+    <Compile Include="Options.xaml.cs">
+      <DependentUpon>Options.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pinger.cs" />
     <Compile Include="Presenter.cs" />
     <Compile Include="Quality.cs" />
@@ -91,6 +103,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Options.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

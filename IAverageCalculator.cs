@@ -3,7 +3,7 @@
 	public interface IAverageCalculator
 	{
 		int WindowSize { get; set; }
-		int SampleSize { get; }
+		bool WindowIsFull { get; }
 		double Average { get; }
 		void Add(double element);
 	}

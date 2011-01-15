@@ -13,7 +13,7 @@
     <property name="Servers" type="string" default="8.8.8.8\n8.8.4.4" />
     <property name="Bytes" type="int" default="8" />
     <property name="ProblemThresholdMs" type="int" default="300" />
-    <property name="FailThresholdMs" type="int" default="1000" />
+    <property name="FailThresholdMs" type="int" default="1200" />
     <property name="TimeoutMs" type="int" default="1500" />
     <property name="TestEachMs" type="int" default="2000" />
     <property name="ZenerFactor" type="double" default="0.2" />

@@ -9,7 +9,7 @@
             <title>Version 0.1</title>
 						<sparkle:releaseNotesLink>http://icm.googlecode.com/svn/trunk/updater/0.1.html</sparkle:releaseNotesLink>
             <pubDate>Sat, 15 Jan 2011 01:28:00 +0000</pubDate>
-            <enclosure url="http://icm.googlecode.com/files/ICM%200.1%20Setup.msi" sparkle:version="0.1" length="550912" type="application/octet-stream" />
+            <enclosure url="http://icm.googlecode.com/files/ICM 0.1 Setup.msi" sparkle:version="0.1" length="550912" type="application/octet-stream" />
          </item>
    </channel>
 </rss>

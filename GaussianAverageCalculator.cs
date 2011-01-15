@@ -9,12 +9,13 @@ namespace org.pescuma.icm
 		private int windowSize;
 		private readonly List<double> elements = new List<double>();
 		private readonly double[] kernel = new double[3];
-		private readonly int guessWindowSize;
+		private double sigma;
 
 		public GaussianAverageCalculator(int windowSize, double sigma, int guessWindowSize)
 		{
+			this.sigma = sigma;
 			this.windowSize = windowSize;
-			this.guessWindowSize = guessWindowSize;
+			GuessWindowSize = guessWindowSize;
 			InitKernel(sigma);
 		}
 
@@ -26,6 +27,22 @@ namespace org.pescuma.icm
 			double sum = kernel.Sum();
 			for (int i = 0; i < kernel.Length; i++)
 				kernel[i] = kernel[i] / sum;
+		}
+
+		public int GuessWindowSize { get; set; }
+
+		public double Sigma
+		{
+			get { return sigma; }
+			set
+			{
+				if (sigma == value)
+					return;
+				;
+
+				sigma = value;
+				InitKernel(sigma);
+			}
 		}
 
 		/// <see cref="http://en.wikipedia.org/wiki/Gaussian_filter"/>
@@ -92,13 +109,13 @@ namespace org.pescuma.icm
 
 		private double GuessNextElement(List<double> vals)
 		{
-			int guessCount = Math.Min(guessWindowSize, vals.Count);
+			int guessCount = Math.Min(GuessWindowSize, vals.Count);
 
 			double next = 0;
 			for (int i = vals.Count - guessCount; i < vals.Count; i++)
 				next += vals[i];
 			next /= guessCount;
-			
+
 			return next;
 		}
 

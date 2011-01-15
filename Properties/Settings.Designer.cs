@@ -49,7 +49,7 @@ namespace org.pescuma.icm.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        [global::System.Configuration.DefaultSettingValueAttribute("32")]
         public int Bytes {
             get {
                 return ((int)(this["Bytes"]));
@@ -73,7 +73,7 @@ namespace org.pescuma.icm.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1200")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1500")]
         public int FailThresholdMs {
             get {
                 return ((int)(this["FailThresholdMs"]));
@@ -97,7 +97,7 @@ namespace org.pescuma.icm.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3000")]
         public int TestEachMs {
             get {
                 return ((int)(this["TestEachMs"]));
@@ -121,7 +121,7 @@ namespace org.pescuma.icm.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
         public int AverageWindow {
             get {
                 return ((int)(this["AverageWindow"]));
@@ -133,7 +133,7 @@ namespace org.pescuma.icm.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int AverageType {
             get {
                 return ((int)(this["AverageType"]));

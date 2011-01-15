@@ -10,7 +10,7 @@ namespace org.pescuma.icm
 	public class Presenter : BasePresenter
 	{
 		private readonly Pinger pinger;
-		private readonly IAverageCalculator avg;
+		private IAverageCalculator avg;
 
 		public Presenter()
 		{
@@ -35,6 +35,30 @@ namespace org.pescuma.icm
 
 			PropertyChanging += NotifyDependentPropertyChanging;
 			PropertyChanged += NotifyDependentPropertyChanged;
+
+			Config.PropertyChanged += (s, e) =>
+			                          	{
+			                          		if (e.PropertyName == BaseConfiguration.PROPERTIES.AVERAGE_WINDOW)
+			                          		{
+			                          			avg.WindowSize = Config.AverageWindow;
+			                          		}
+			                          		else if (e.PropertyName == BaseConfiguration.PROPERTIES.AVERAGE_TYPE)
+			                          		{
+			                          			avg = CreateAverageCalculator();
+			                          		}
+			                          		else if (e.PropertyName == BaseConfiguration.PROPERTIES.GAUSSIAN_AVERAGE_GUESS_WINDOW)
+			                          		{
+			                          			var gavg = avg as GaussianAverageCalculator;
+			                          			if (gavg != null)
+			                          				gavg.GuessWindowSize = Config.GaussianAverageGuessWindow;
+			                          		}
+			                          		else if (e.PropertyName == BaseConfiguration.PROPERTIES.GAUSSIAN_AVERAGE_SIGMA)
+			                          		{
+			                          			var gavg = avg as GaussianAverageCalculator;
+			                          			if (gavg != null)
+			                          				gavg.Sigma = Config.GaussianAverageSigma;
+			                          		}
+			                          	};
 		}
 
 		private IAverageCalculator CreateAverageCalculator()
@@ -105,16 +129,16 @@ namespace org.pescuma.icm
 			switch (CurrentQuality)
 			{
 				case Quality.Good:
-					problemThresholdMs = Config.ProblemThresholdMs + ComputeZener(Config.ProblemThresholdMs);
+					problemThresholdMs = Math.Min(Config.ProblemThresholdMs + ComputeZener(Config.ProblemThresholdMs), Config.TimeoutMs - 1);
 					failThresholdMs = Config.TimeoutMs;
 					break;
 				case Quality.Problem:
-					problemThresholdMs = Config.ProblemThresholdMs - ComputeZener(Config.ProblemThresholdMs);
-					failThresholdMs = Config.FailThresholdMs + ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs);
+					problemThresholdMs = Math.Max(Config.ProblemThresholdMs - ComputeZener(Config.ProblemThresholdMs), 1);
+					failThresholdMs = Math.Min(Config.FailThresholdMs + ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs), Config.TimeoutMs - 1);
 					break;
 				case Quality.Fail:
 					problemThresholdMs = -1;
-					failThresholdMs = Config.FailThresholdMs - ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs);
+					failThresholdMs = Math.Max(Config.FailThresholdMs - ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs), 1);
 					break;
 				default:
 					throw new Exception();

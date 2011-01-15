@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>ICM Changelog</title>
+      <link>http://icm.googlecode.com/svn-history/updater/versioninfo.xml</link>
+      <description>Most recent changes with links to updates.</description>
+      <language>en</language>
+         <item>
+            <title>Version 0.1</title>
+						<sparkle:releaseNotesLink>
+              http://icm.googlecode.com/svn-history/updater/0.1.html
+            </sparkle:releaseNotesLink>
+            <pubDate>Fri, 14 Jan 2011 22:30:00 +0000</pubDate>
+            <enclosure url="http://icm.googlecode.com/icm-0.1.msi" sparkle:version="0.1" length="1623481" type="application/octet-stream" />
+         </item>
+   </channel>
+</rss>

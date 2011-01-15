@@ -28,10 +28,13 @@ namespace InternetConnectionMonitor
 			InitializeComponent();
 
 #if DEBUG
-			sparkle = new Sparkle("http://icm.googlecode.com/svn-history/updater/versioninfo.xaml", false);
+			var checkOnStart = true;
 #else
-			sparkle = new Sparkle("http://icm.googlecode.com/svn-history/updater/versioninfo.xaml");
+			var checkOnStart = true;
 #endif
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+			sparkle = new Sparkle("http://icm.googlecode.com/svn-history/updater/versioninfo.xml", checkOnStart);
+// ReSharper restore ConditionIsAlwaysTrueOrFalse
 
 			InitPosition();
 

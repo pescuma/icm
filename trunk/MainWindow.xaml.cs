@@ -57,6 +57,12 @@ namespace org.pescuma.icm
 
 			if (string.IsNullOrWhiteSpace(presenter.Config.Servers))
 				ShowOptions();
+
+			Closed += delegate
+			          	{
+			          		if (options != null)
+			          			options.Close();
+			          	};
 		}
 
 		private void InitPosition()
@@ -106,6 +112,12 @@ namespace org.pescuma.icm
 			trayIcon.DoubleClick += delegate { ShowInformation(); };
 
 			UpdateTray();
+
+			Closed += delegate
+			          	{
+			          		trayIcon.Dispose();
+			          		trayIcon = null;
+			          	};
 		}
 
 		private void UpdateTray()

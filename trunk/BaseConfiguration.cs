@@ -37,14 +37,14 @@ namespace org.pescuma.icm
         
         public BaseConfiguration()
         {
-            _bytes = 8;
+            _bytes = 32;
             _problemThresholdMs = 300;
-            _failThresholdMs = 1200;
+            _failThresholdMs = 1500;
             _timeoutMs = 1500;
-            _testEachMs = 5000;
+            _testEachMs = 3000;
             _zenerFactor = 0.2;
-            _averageWindow = 6;
-            _averageType = 2;
+            _averageWindow = 3;
+            _averageType = 0;
             _gaussianAverageSigma = 1;
             _gaussianAverageGuessWindow = 2;
         }

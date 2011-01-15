@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	internal class Win32Utils
 	{

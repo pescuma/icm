@@ -7,7 +7,7 @@ using org.pescuma.ModelSharp.Lib;
 using System.Runtime.Serialization;
 using System.Diagnostics;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
     [DataContract]
     public abstract class BaseConfiguration : INotifyPropertyChanging, INotifyChildPropertyChanging, INotifyPropertyChanged, INotifyChildPropertyChanged, ICloneable
@@ -37,12 +37,11 @@ namespace InternetConnectionMonitor
         
         public BaseConfiguration()
         {
-            _servers = "8.8.8.8\n8.8.4.4";
             _bytes = 8;
             _problemThresholdMs = 300;
             _failThresholdMs = 1200;
             _timeoutMs = 1500;
-            _testEachMs = 2000;
+            _testEachMs = 5000;
             _zenerFactor = 0.2;
             _averageWindow = 6;
             _averageType = 2;

@@ -7,17 +7,17 @@ using System.Windows.Media.Imaging;
 using AppLimit.NetSparkle;
 using Point = System.Windows.Point;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	public partial class MainWindow : Window
 	{
-		public const string APP_NAME = "Internet Connection Monitor";
+		public const string APP_NAME = "ICM";
 
 		private Sparkle sparkle;
 
 		private readonly Presenter presenter = new Presenter();
 		private System.Windows.Forms.NotifyIcon trayIcon;
-		private GrowlNotifier growlNofier;
+		private readonly GrowlNotifier growlNofier;
 
 		private bool moving;
 		private Vector toCenter;
@@ -28,12 +28,12 @@ namespace InternetConnectionMonitor
 			InitializeComponent();
 
 #if DEBUG
-			var checkOnStart = true;
+			var checkOnStart = false;
 #else
 			var checkOnStart = true;
 #endif
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
-			sparkle = new Sparkle("http://icm.googlecode.com/svn-history/updater/versioninfo.xml", checkOnStart);
+			sparkle = new Sparkle("http://icm.googlecode.com/svn/trunk/updater/versioninfo.xml", checkOnStart);
 // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
 			InitPosition();
@@ -54,6 +54,9 @@ namespace InternetConnectionMonitor
 			                             		if (e.PropertyName == BasePresenter.PROPERTIES.TRAY_IMAGE)
 			                             			UpdateTray();
 			                             	};
+
+			if (string.IsNullOrWhiteSpace(presenter.Config.Servers))
+				ShowOptions();
 		}
 
 		private void InitPosition()

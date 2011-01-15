@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Timers;
 using System.Windows;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	internal class Pinger
 	{
@@ -13,7 +14,7 @@ namespace InternetConnectionMonitor
 		private Ping pingSender;
 		private readonly Timer timer;
 		private long lastPing;
-		private int lastServer;
+		private int lastServer = -1;
 
 		public Pinger(Configuration config, Action<int> callback)
 		{
@@ -25,12 +26,15 @@ namespace InternetConnectionMonitor
 			timer.Elapsed += OnTimer;
 		}
 
+		public bool IsStarted
+		{
+			get { return pingSender != null; }
+		}
+
 		public void Start()
 		{
 			if (pingSender != null)
 				throw new InvalidOperationException("Already started");
-			if (string.IsNullOrEmpty(config.Servers))
-				throw new InvalidOperationException("No server defined");
 
 			pingSender = new Ping();
 			pingSender.PingCompleted += OnPingCompleted;
@@ -44,11 +48,16 @@ namespace InternetConnectionMonitor
 			options.DontFragment = true;
 
 			var servers = new List<string>(config.Servers.Split('\n'));
-			servers.ForEach(s => s.Trim());
+			for (int i = 0; i < servers.Count; i++)
+				servers[i] = servers[i].Trim(' ', '\r', '\t');
 			servers.RemoveAll(s => s.Length < 1);
 
 			if (servers.Count < 1)
+			{
+				timer.Interval = Math.Max(100, config.TestEachMs);
+				timer.Start();
 				return;
+			}
 
 			lastServer = (lastServer + 1) % servers.Count;
 			lastPing = GetCurrentTickMs();

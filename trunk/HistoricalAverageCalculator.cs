@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	public class HistoricalAverageCalculator : IAverageCalculator
 	{

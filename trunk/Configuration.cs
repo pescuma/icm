@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
     [DataContract]
     public class Configuration : BaseConfiguration

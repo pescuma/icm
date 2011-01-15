@@ -7,7 +7,7 @@ using org.pescuma.ModelSharp.Lib;
 using System.Runtime.Serialization;
 using System.Diagnostics;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
     [DataContract]
     public abstract class BasePresenter : INotifyPropertyChanging, INotifyChildPropertyChanging, INotifyPropertyChanged, INotifyChildPropertyChanged, ICloneable

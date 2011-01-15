@@ -1,4 +1,4 @@
-﻿namespace InternetConnectionMonitor
+﻿namespace org.pescuma.icm
 {
 	public enum Side
 	{

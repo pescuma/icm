@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	public class GaussianAverageCalculator : IAverageCalculator
 	{

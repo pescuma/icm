@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	[DataContract]
 	public class Presenter : BasePresenter
@@ -14,6 +14,20 @@ namespace InternetConnectionMonitor
 
 		public Presenter()
 		{
+			Config.Servers = Properties.Settings.Default.Servers;
+			Config.Bytes = Properties.Settings.Default.Bytes;
+			Config.ProblemThresholdMs = Properties.Settings.Default.ProblemThresholdMs;
+			Config.FailThresholdMs = Properties.Settings.Default.FailThresholdMs;
+			Config.TimeoutMs = Properties.Settings.Default.TimeoutMs;
+			Config.TestEachMs = Properties.Settings.Default.TestEachMs;
+			Config.ZenerFactor = Properties.Settings.Default.ZenerFactor;
+			Config.AverageWindow = Properties.Settings.Default.AverageWindow;
+			Config.AverageType = Properties.Settings.Default.AverageType;
+			Config.GaussianAverageSigma = Properties.Settings.Default.GaussianAverageSigma;
+			Config.GaussianAverageGuessWindow = Properties.Settings.Default.GaussianAverageGuessWindow;
+			Config.GrowlServer = Properties.Settings.Default.GrowlServer;
+			Config.GrowlPassword = Properties.Settings.Default.GrowlPassword;
+
 			avg = CreateAverageCalculator();
 
 			pinger = new Pinger(Config, OnPingCompleted);
@@ -149,9 +163,11 @@ namespace InternetConnectionMonitor
 				throw new Exception("Could not get exe path");
 
 #if DEBUG
-			exePath = Path.Combine(exePath, @"..\..");
+			var skinPath = Path.Combine(exePath, @"..\..\Resources");
+#else
+			var skinPath = Path.Combine(exePath, @"DefaultSkin");
 #endif
-			var result = Path.Combine(Path.Combine(exePath, @"Resources"), filename.ToLower());
+			var result = Path.Combine(skinPath, filename.ToLower());
 			result = Path.GetFullPath(result);
 
 			return result;

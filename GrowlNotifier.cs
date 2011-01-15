@@ -1,7 +1,7 @@
 ﻿using System;
 using Growl.Connector;
 
-namespace InternetConnectionMonitor
+namespace org.pescuma.icm
 {
 	internal class GrowlNotifier
 	{
@@ -28,7 +28,7 @@ namespace InternetConnectionMonitor
 
 			var problemToGood = new NotificationType(ID(Quality.Problem, Quality.Good), "Problems to good");
 			problemToGood.Icon = GetGrowlImage(Quality.Good);
-			goodToProblem.Enabled = false;
+			problemToGood.Enabled = false;
 
 			var problemToFail = new NotificationType(ID(Quality.Problem, Quality.Fail), "Problems to no connection");
 			problemToFail.Icon = GetGrowlImage(Quality.Fail);

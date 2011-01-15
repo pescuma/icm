@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("ICM")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Ricardo Pescuma Domenecci")]
+[assembly: AssemblyCompany("Pescuma")]
 [assembly: AssemblyProduct("ICM")]
 [assembly: AssemblyCopyright("Copyright © Ricardo Pescuma Domenecci 2011")]
 [assembly: AssemblyTrademark("")]

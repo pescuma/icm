@@ -14,18 +14,50 @@
 					         Text="{Binding Path=Servers}" />
 
 					<Label Content="Time between requests (ms):" />
-                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=TestEachMs}" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                        <TextBox.Text>
+                            <Binding Path="TestEachMs" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <ExceptionValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
 
                     <Label Content="With problems threshold (ms):" />
-                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=ProblemThresholdMs}" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                        <TextBox.Text>
+                            <Binding Path="ProblemThresholdMs" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <ExceptionValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
 
                     <Label Content="No connection threshold (ms):" />
-                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=FailThresholdMs}" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                        <TextBox.Text>
+                            <Binding Path="FailThresholdMs" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <ExceptionValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
 
                     <Label Content="Time-out threshold (ms):" />
-                    <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=TimeoutMs}" />
+                    <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                        <TextBox.Text>
+                            <Binding Path="TimeoutMs" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <ExceptionValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
 
-				</Grid>
+                </Grid>
 			</TabItem>
 
 			<TabItem Header="Notification">
@@ -49,12 +81,28 @@ If all settings are empty the growl versions installed in this machine will be u
 				<GroupBox Header="Ping">
 					<Grid ex:Grid.Columns="Auto,*" ex:Grid.CellSpacing="5">
 						<Label Content="Bytes per request:" />
-                        <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=Bytes}" />
+                        <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                            <TextBox.Text>
+                                <Binding Path="Bytes" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ExceptionValidationRule />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
 
-						<Label Content="Average window:" />
-                        <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=AverageWindow}" />
+                        <Label Content="Average window:" />
+                        <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                            <TextBox.Text>
+                                <Binding Path="AverageWindow" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ExceptionValidationRule />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
 
-						<Label Content="Average type:" />
+                        <Label Content="Average type:" />
                         <ComboBox SelectedIndex="{Binding Path=AverageType}">
 							<ComboBoxItem Content="Simple" />
 							<ComboBoxItem Content="Historical" />
@@ -64,16 +112,40 @@ If all settings are empty the growl versions installed in this machine will be u
 						<GroupBox Header="Gaussian average" Grid.ColumnSpan="2">
 							<Grid ex:Grid.Columns="Auto,*" ex:Grid.CellSpacing="5">
 								<Label Content="Sigma:" />
-                                <TextBox PreviewTextInput="DoublePreviewTextInput" Text="{Binding Path=GaussianAverageSigma}" />
+                                <TextBox>
+                                    <TextBox.Text>
+                                        <Binding Path="GaussianAverageSigma" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ExceptionValidationRule />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
 
-								<Label Content="Time-out threshold:" />
-                                <TextBox PreviewTextInput="NumericPreviewTextInput" Text="{Binding Path=GaussianAverageGuessWindow}" />
-							</Grid>
+                                <Label Content="Time-out threshold:" />
+                                <TextBox PreviewTextInput="NumericPreviewTextInput" PreviewKeyDown="NumericPreviewKeyDown">
+                                    <TextBox.Text>
+                                        <Binding Path="GaussianAverageGuessWindow" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <ExceptionValidationRule />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                            </Grid>
 						</GroupBox>
 
 						<Label Content="Zener factor:" />
-                        <TextBox PreviewTextInput="DoublePreviewTextInput" Text="{Binding Path=ZenerFactor}" />
-					</Grid>
+                        <TextBox>
+                            <TextBox.Text>
+                                <Binding Path="ZenerFactor" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <ExceptionValidationRule />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </Grid>
 				</GroupBox>
 			</TabItem>
 
@@ -81,8 +153,8 @@ If all settings are empty the growl versions installed in this machine will be u
 
 		<Grid ex:Grid.Columns="Auto" HorizontalAlignment="Right">
 			<Grid ex:Grid.Columns="Auto,Auto" ex:Grid.CellSpacing="5">
-				<Button Content="   OK   " IsDefault="True" />
-				<Button Content="   Cancel   " IsCancel="True" />
+				<Button Content="   OK   " IsDefault="True" Click="OnOK" />
+                <Button Content="   Cancel   " IsCancel="True" Click="OnCancel" />
 			</Grid>
 		</Grid>
 	</Grid>

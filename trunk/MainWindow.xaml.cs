@@ -21,6 +21,7 @@ namespace InternetConnectionMonitor
 
 		private bool moving;
 		private Vector toCenter;
+		private Options options;
 
 		public MainWindow()
 		{
@@ -331,15 +332,17 @@ namespace InternetConnectionMonitor
 
 		private void ShowOptions()
 		{
-			Options options = new Options();
-			options.Owner = this;
-			options.DataContext = presenter.Config.Clone();
-
-			if (options.ShowDialog() ?? false)
+			if (options != null)
 			{
-				presenter.Config.CopyFrom((Configuration) options.DataContext);
-				presenter.Config.GrowlPassword = options.GrowlPassword.Password;
+				options.Focus();
+				return;
 			}
+
+			options = new Options(presenter);
+			options.DataContext = presenter.Config.Clone();
+			options.Closed += delegate { options = null; };
+
+			options.Show();
 		}
 	}
 }

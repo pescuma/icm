@@ -40,7 +40,7 @@ namespace InternetConnectionMonitor
             _servers = "8.8.8.8\n8.8.4.4";
             _bytes = 8;
             _problemThresholdMs = 300;
-            _failThresholdMs = 1000;
+            _failThresholdMs = 1200;
             _timeoutMs = 1500;
             _testEachMs = 2000;
             _zenerFactor = 0.2;

@@ -109,15 +109,19 @@ namespace org.pescuma.icm
 			return GetFullResourcePath("Tray_" + CurrentQuality + ".ico");
 		}
 
-		private void OnPingCompleted(int dt)
+		private void OnPingCompleted(string server, int dt)
 		{
+			var error = (dt == -1);
+			if (error)
+				dt = Config.TimeoutMs;
+
 			avg.Add(dt);
 
 			LastPingTimeMs = dt;
 			AvgPingTimeMs = (int) avg.Average;
-			CurrentQuality = ComputeQuality(AvgPingTimeMs);
+			CurrentQuality = (error ? Quality.Fail : ComputeQuality(AvgPingTimeMs));
 
-			Console.WriteLine(string.Format("Ping: {0} -> avg = {1} -> {2}", dt == Config.TimeoutMs ? "----" : dt.ToString().PadLeft(4), AvgPingTimeMs.ToString().PadLeft(4), CurrentQuality));
+			Console.WriteLine(string.Format("Ping: {0} {1}ms -> avg = {2}ms -> {3}", server.PadLeft(15), error ? "----" : dt.ToString().PadLeft(4), AvgPingTimeMs.ToString().PadLeft(4), CurrentQuality));
 		}
 
 		private Quality ComputeQuality(int pingTime)

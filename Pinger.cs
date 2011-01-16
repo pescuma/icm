@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.NetworkInformation;
 using System.Timers;
 using System.Windows;
@@ -10,13 +9,14 @@ namespace org.pescuma.icm
 	internal class Pinger
 	{
 		private readonly Configuration config;
-		private readonly Action<int> callback;
+		private readonly Action<string, int> callback;
 		private Ping pingSender;
 		private readonly Timer timer;
 		private long lastPing;
 		private int lastServer = -1;
+		private string lastServerName;
 
-		public Pinger(Configuration config, Action<int> callback)
+		public Pinger(Configuration config, Action<string, int> callback)
 		{
 			this.config = config;
 			this.callback = callback;
@@ -61,9 +61,10 @@ namespace org.pescuma.icm
 
 			lastServer = (lastServer + 1) % servers.Count;
 			lastPing = GetCurrentTickMs();
+			lastServerName = servers[lastServer];
 
 			//Console.Write("Reply from " + servers[lastServer] + ": ");
-			pingSender.SendAsync(servers[lastServer], config.TimeoutMs, CreateBuffer(), options);
+			pingSender.SendAsync(lastServerName, config.TimeoutMs, CreateBuffer(), options);
 		}
 
 		private byte[] CreateBuffer()
@@ -95,7 +96,7 @@ namespace org.pescuma.icm
 			else if (e.Error != null)
 			{
 //				Console.WriteLine("Ping failed: " + e.Error);
-				OnNewPingTime(config.TimeoutMs);
+				OnNewPingTime(lastServerName, -1);
 			}
 			else
 			{
@@ -109,17 +110,17 @@ namespace org.pescuma.icm
 
 //				Console.WriteLine("Ping status: {0} in {1} ms", reply.Status, dt);
 
-				OnNewPingTime(dt);
+				OnNewPingTime(lastServerName, dt);
 			}
 		}
 
-		private void OnNewPingTime(int dt)
+		private void OnNewPingTime(string server, int dt)
 		{
 			int pingDt = (int) (GetCurrentTickMs() - lastPing);
 
 			//Console.WriteLine("time=" + dt + "ms  clock=" + pingDt + "ms");
 
-			Application.Current.Dispatcher.BeginInvoke((Action) delegate { callback(dt); });
+			Application.Current.Dispatcher.BeginInvoke((Action) delegate { callback(server, dt); });
 
 			timer.Interval = Math.Max(100, config.TestEachMs - pingDt);
 			timer.Start();

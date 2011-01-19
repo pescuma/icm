@@ -9,14 +9,14 @@ namespace org.pescuma.icm
 	internal class Pinger
 	{
 		private readonly Configuration config;
-		private readonly Action<string, int> callback;
+		private readonly Action<string, DateTime, int> callback;
 		private Ping pingSender;
 		private readonly Timer timer;
-		private long lastPing;
+		private DateTime lastPing;
 		private int lastServer = -1;
 		private string lastServerName;
 
-		public Pinger(Configuration config, Action<string, int> callback)
+		public Pinger(Configuration config, Action<string, DateTime, int> callback)
 		{
 			this.config = config;
 			this.callback = callback;
@@ -60,7 +60,7 @@ namespace org.pescuma.icm
 			}
 
 			lastServer = (lastServer + 1) % servers.Count;
-			lastPing = GetCurrentTickMs();
+			lastPing = DateTime.Now;
 			lastServerName = servers[lastServer];
 
 			//Console.Write("Reply from " + servers[lastServer] + ": ");
@@ -116,19 +116,14 @@ namespace org.pescuma.icm
 
 		private void OnNewPingTime(string server, int dt)
 		{
-			int pingDt = (int) (GetCurrentTickMs() - lastPing);
+			int pingDt = (int) ((DateTime.Now - lastPing).Ticks / 10000);
 
 			//Console.WriteLine("time=" + dt + "ms  clock=" + pingDt + "ms");
 
-			Application.Current.Dispatcher.BeginInvoke((Action) delegate { callback(server, dt); });
+			Application.Current.Dispatcher.BeginInvoke((Action) delegate { callback(server, lastPing, dt); });
 
 			timer.Interval = Math.Max(100, config.TestEachMs - pingDt);
 			timer.Start();
-		}
-
-		private long GetCurrentTickMs()
-		{
-			return DateTime.Now.Ticks / 10000;
 		}
 
 		private void OnTimer(object sender, ElapsedEventArgs e)

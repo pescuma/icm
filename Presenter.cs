@@ -27,6 +27,7 @@ namespace org.pescuma.icm
 			Config.GaussianAverageGuessWindow = Properties.Settings.Default.GaussianAverageGuessWindow;
 			Config.GrowlServer = Properties.Settings.Default.GrowlServer;
 			Config.GrowlPassword = Properties.Settings.Default.GrowlPassword;
+			Config.MaxHistoryPoints = Properties.Settings.Default.MaxHistoryPoints;
 
 			avg = CreateAverageCalculator();
 
@@ -99,6 +100,11 @@ namespace org.pescuma.icm
 				NotifyPropertyChanged(PROPERTIES.TRAY_IMAGE);
 		}
 
+		public string TrayAppImage
+		{
+			get { return GetFullResourcePath("Tray_App.ico"); }
+		}
+
 		protected override string GetMainImage()
 		{
 			return GetFullResourcePath(CurrentSide + "_" + CurrentQuality + ".png");
@@ -109,51 +115,66 @@ namespace org.pescuma.icm
 			return GetFullResourcePath("Tray_" + CurrentQuality + ".ico");
 		}
 
-		private void OnPingCompleted(string server, int dt)
+		private void OnPingCompleted(string server, DateTime date, int pingTime)
 		{
-			var error = (dt == -1);
+			var error = (pingTime == -1);
 			if (error)
-				dt = Config.TimeoutMs;
+				pingTime = Config.TimeoutMs;
 
-			avg.Add(dt);
+			avg.Add(pingTime);
 
-			LastPingTimeMs = dt;
+			LastPingTimeMs = pingTime;
 			AvgPingTimeMs = (int) avg.Average;
-			CurrentQuality = (error ? Quality.Fail : ComputeQuality(AvgPingTimeMs));
 
-			Console.WriteLine(string.Format("Ping: {0} {1}ms -> avg = {2}ms -> {3}", server.PadLeft(15), error ? "----" : dt.ToString().PadLeft(4), AvgPingTimeMs.ToString().PadLeft(4), CurrentQuality));
-		}
-
-		private Quality ComputeQuality(int pingTime)
-		{
 			int problemThresholdMs;
 			int failThresholdMs;
 
+			GetProblemThresholdMs(out problemThresholdMs, out failThresholdMs);
+
+			if (error)
+				CurrentQuality = Quality.Fail;
+			else if (AvgPingTimeMs <= problemThresholdMs)
+				CurrentQuality = Quality.Good;
+			else if (AvgPingTimeMs <= failThresholdMs)
+				CurrentQuality = Quality.Problem;
+			else
+				CurrentQuality = Quality.Fail;
+
+			HistoryEntry he = new HistoryEntry();
+			he.Date = date;
+			he.PingTimeMs = pingTime;
+			he.AverageTimeMs = AvgPingTimeMs;
+			he.ProblemThresholdMs = problemThresholdMs;
+			he.FailThresholdMs = failThresholdMs;
+			he.Quality = CurrentQuality;
+
+			if (History.Count > Config.MaxHistoryPoints - 1)
+				History.RemoveRange(0, History.Count - Config.MaxHistoryPoints + 1);
+			History.Add(he);
+
+			Console.WriteLine(string.Format("Ping: {0} {1}ms -> avg = {2}ms -> {3}", server.PadLeft(15), error ? "----" : pingTime.ToString().PadLeft(4), AvgPingTimeMs.ToString().PadLeft(4), CurrentQuality));
+		}
+
+		private void GetProblemThresholdMs(out int problemThresholdMs, out int failThresholdMs)
+		{
 			// Avoid switching too much when closer to the border
 			switch (CurrentQuality)
 			{
 				case Quality.Good:
 					problemThresholdMs = Math.Min(Config.ProblemThresholdMs + ComputeZener(Config.ProblemThresholdMs), Config.TimeoutMs - 1);
-					failThresholdMs = Config.TimeoutMs;
+					failThresholdMs = Math.Min(Config.FailThresholdMs + ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs), Config.TimeoutMs - 1);
 					break;
 				case Quality.Problem:
 					problemThresholdMs = Math.Max(Config.ProblemThresholdMs - ComputeZener(Config.ProblemThresholdMs), 1);
 					failThresholdMs = Math.Min(Config.FailThresholdMs + ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs), Config.TimeoutMs - 1);
 					break;
 				case Quality.Fail:
-					problemThresholdMs = -1;
+					problemThresholdMs = Math.Max(Config.ProblemThresholdMs - ComputeZener(Config.ProblemThresholdMs), 1);
 					failThresholdMs = Math.Max(Config.FailThresholdMs - ComputeZener(Config.FailThresholdMs - Config.ProblemThresholdMs), 1);
 					break;
 				default:
 					throw new Exception();
 			}
-
-			if (pingTime <= problemThresholdMs)
-				return Quality.Good;
-			else if (pingTime <= failThresholdMs)
-				return Quality.Problem;
-			else
-				return Quality.Fail;
 		}
 
 		private int ComputeZener(int threshold)

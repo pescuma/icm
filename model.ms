@@ -7,8 +7,18 @@
     <component name="Config" type="Configuration" />
     <property name="MainImage" type="string" setter="protected" />
     <property name="TrayImage" type="string" setter="protected" />
+    <collection name="History" contents="HistoryEntry" />
   </type>
-  
+
+  <type name="HistoryEntry">
+    <property name="Date" type="DateTime" />
+    <property name="PingTimeMs" type="int" />
+    <property name="AverageTimeMs" type="int" />
+    <property name="ProblemThresholdMs" type="int" />
+    <property name="FailThresholdMs" type="int" />
+    <property name="Quality" type="Quality" />
+  </type>
+
   <type name="Configuration">
     <property name="Servers" type="string" />
     <property name="Bytes" type="int" default="32" />
@@ -23,6 +33,7 @@
     <property name="GaussianAverageGuessWindow" type="int" default="2" />
     <property name="GrowlServer" type="string" />
     <property name="GrowlPassword" type="string" />
+    <property name="MaxHistoryPoints" type="int" default="50" />
   </type>
 
 </model>

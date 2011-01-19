@@ -202,5 +202,17 @@ namespace org.pescuma.icm.Properties {
                 this["Servers"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int MaxHistoryPoints {
+            get {
+                return ((int)(this["MaxHistoryPoints"]));
+            }
+            set {
+                this["MaxHistoryPoints"] = value;
+            }
+        }
     }
 }

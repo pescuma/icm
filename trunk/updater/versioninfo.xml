@@ -6,8 +6,14 @@
       <description>Most recent changes with links to updates.</description>
       <language>en</language>
          <item>
+            <title>Version 0.2</title>
+            <sparkle:releaseNotesLink>http://icm.googlecode.com/svn/trunk/updater/0.2.html</sparkle:releaseNotesLink>
+            <pubDate>Sat, 19 Jan 2011 01:00:00 +0000</pubDate>
+            <enclosure url="http://icm.googlecode.com/files/ICM 0.2 Setup.msi" sparkle:version="0.2" length="837120" type="application/octet-stream" />
+         </item>
+         <item>
             <title>Version 0.1</title>
-						<sparkle:releaseNotesLink>http://icm.googlecode.com/svn/trunk/updater/0.1.html</sparkle:releaseNotesLink>
+            <sparkle:releaseNotesLink>http://icm.googlecode.com/svn/trunk/updater/0.1.html</sparkle:releaseNotesLink>
             <pubDate>Sat, 15 Jan 2011 02:00:00 +0000</pubDate>
             <enclosure url="http://icm.googlecode.com/files/ICM 0.1 Setup.msi" sparkle:version="0.1" length="550912" type="application/octet-stream" />
          </item>

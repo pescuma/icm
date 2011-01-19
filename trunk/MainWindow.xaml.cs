@@ -22,6 +22,7 @@ namespace org.pescuma.icm
 		private bool moving;
 		private Vector toCenter;
 		private Options options;
+		private History history;
 
 		public MainWindow()
 		{
@@ -60,9 +61,11 @@ namespace org.pescuma.icm
 
 			Closed += delegate
 			          	{
-			          		if (options != null)
-			          			options.Close();
-			          	};
+							if (options != null)
+								options.Close();
+							if (history != null)
+								history.Close();
+						};
 		}
 
 		private void InitPosition()
@@ -104,6 +107,7 @@ namespace org.pescuma.icm
 			trayIcon.ContextMenu.MenuItems.Add(showHide);
 
 			trayIcon.ContextMenu.MenuItems.Add("Show &Information", delegate { ShowInformation(); });
+			trayIcon.ContextMenu.MenuItems.Add("Show &History...", delegate { ShowHistory(); });
 			trayIcon.ContextMenu.MenuItems.Add("-");
 			trayIcon.ContextMenu.MenuItems.Add("&Options...", delegate { ShowOptions(); });
 			trayIcon.ContextMenu.MenuItems.Add("-");
@@ -135,6 +139,10 @@ namespace org.pescuma.icm
 
 			menuItem = new MenuItem {Header = "Show _Information"};
 			menuItem.Click += delegate { ShowInformation(); };
+			menu.Items.Add(menuItem);
+
+			menuItem = new MenuItem {Header = "Show _History..."};
+			menuItem.Click += delegate { ShowHistory(); };
 			menu.Items.Add(menuItem);
 
 			menu.Items.Add(new Separator());
@@ -357,10 +365,27 @@ namespace org.pescuma.icm
 			}
 
 			options = new Options(presenter);
+			options.Icon = LoadImage(presenter.TrayAppImage);
 			options.DataContext = presenter.Config.Clone();
 			options.Closed += delegate { options = null; };
 
 			options.Show();
+		}
+
+		private void ShowHistory()
+		{
+			if (history != null)
+			{
+				history.Focus();
+				return;
+			}
+
+			history = new History();
+			history.Icon = LoadImage(presenter.TrayAppImage);
+			history.DataContext = presenter.History;
+			history.Closed += delegate { history = null; };
+
+			history.Show();
 		}
 	}
 }

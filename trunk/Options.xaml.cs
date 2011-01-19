@@ -54,6 +54,7 @@ namespace org.pescuma.icm
 			Properties.Settings.Default.GaussianAverageGuessWindow = presenter.Config.GaussianAverageGuessWindow;
 			Properties.Settings.Default.GrowlServer = presenter.Config.GrowlServer;
 			Properties.Settings.Default.GrowlPassword = presenter.Config.GrowlPassword;
+			Properties.Settings.Default.MaxHistoryPoints = presenter.Config.MaxHistoryPoints;
 			Properties.Settings.Default.Save();
 
 			Close();

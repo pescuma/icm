@@ -70,6 +70,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -94,6 +95,9 @@
     <Compile Include="BaseConfiguration.cs">
       <DependentUpon>model.ms</DependentUpon>
     </Compile>
+    <Compile Include="BaseHistoryEntry.cs">
+      <DependentUpon>model.ms</DependentUpon>
+    </Compile>
     <Compile Include="BasePresenter.cs">
       <DependentUpon>model.ms</DependentUpon>
     </Compile>
@@ -101,6 +105,10 @@
     <Compile Include="GaussianAverageCalculator.cs" />
     <Compile Include="GrowlNotifier.cs" />
     <Compile Include="HistoricalAverageCalculator.cs" />
+    <Compile Include="History.xaml.cs">
+      <DependentUpon>History.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HistoryEntry.cs" />
     <Compile Include="IAverageCalculator.cs" />
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
@@ -112,6 +120,10 @@
     <Compile Include="Side.cs" />
     <Compile Include="Win32Utils.cs" />
     <Compile Include="WpfScreen.cs" />
+    <Page Include="History.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

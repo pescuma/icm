@@ -7,92 +7,99 @@
         Title="History" Height="450" Width="600">
 
 	<Grid ex:Grid.Columns="*" ex:Grid.Rows="*,Auto">
-		<Grid.Resources>
-			<Style x:Key="ColorByPingQuality" TargetType="chartingToolkit:ColumnDataPoint">
-				<Setter Property="Background" Value="White" />
-				<Setter Property="Template">
-					<Setter.Value>
-						<ControlTemplate TargetType="chartingToolkit:ColumnDataPoint">
-							<Border BorderBrush="{TemplateBinding BorderBrush}"
-							        BorderThickness="{TemplateBinding BorderThickness}">
-								<Grid Background="{Binding PingQualityColor}">
-									<Rectangle>
-										<Rectangle.Fill>
-											<LinearGradientBrush>
-												<GradientStop Color="#ffffffff" Offset="0" />
-												<GradientStop Color="#bbffffff" Offset="1" />
-											</LinearGradientBrush>
-										</Rectangle.Fill>
-									</Rectangle>
-									<Border BorderBrush="#ccffffff" BorderThickness="1">
-										<Border BorderBrush="#77ffffff" BorderThickness="1" />
-									</Border>
-								</Grid>
-							</Border>
-						</ControlTemplate>
-					</Setter.Value>
-				</Setter>
-			</Style>
-
-			<Style x:Key="LineByQuality" TargetType="chartingToolkit:LineDataPoint">
-				<Setter Property="Background" Value="Black" />
-				<Setter Property="Template">
-					<Setter.Value>
-						<ControlTemplate TargetType="chartingToolkit:LineDataPoint">
-							<Grid>
-								<Ellipse Fill="{Binding QualityColor}"
-								         Stroke="{TemplateBinding BorderBrush}"
-								         StrokeThickness="{TemplateBinding BorderThickness}" />
-								<Ellipse>
-									<Ellipse.Fill>
-										<LinearGradientBrush>
-											<GradientStop Color="#77ffffff" Offset="0" />
-											<GradientStop Color="#00ffffff" Offset="1" />
-										</LinearGradientBrush>
-									</Ellipse.Fill>
-								</Ellipse>
-							</Grid>
-						</ControlTemplate>
-					</Setter.Value>
-				</Setter>
-			</Style>
-
-		</Grid.Resources>
-
 		<chartingToolkit:Chart Title="Ping Time History">
 			<chartingToolkit:Chart.Series>
-				<chartingToolkit:ColumnSeries Title="Ping time"
-				                              ItemsSource="{Binding}"
-				                              IndependentValueBinding="{Binding Date}"
-				                              DependentValueBinding="{Binding PingTimeMs}"
-				                              DataPointStyle="{StaticResource ColorByPingQuality}">
-				</chartingToolkit:ColumnSeries>
-				<chartingToolkit:LineSeries Title="Average"
-				                            ItemsSource="{Binding}"
-				                            IndependentValueBinding="{Binding Date}"
-				                            DependentValueBinding="{Binding AverageTimeMs}"
-				                            DataPointStyle="{StaticResource LineByQuality}">
-				</chartingToolkit:LineSeries>
-				<chartingToolkit:LineSeries Title="Problem threshold"
+                <chartingToolkit:LineSeries Title="Problem threshold"
 				                            ItemsSource="{Binding}"
 				                            IndependentValueBinding="{Binding Date}"
 				                            DependentValueBinding="{Binding ProblemThresholdMs}">
-					<chartingToolkit:LineSeries.DataPointStyle>
-						<Style TargetType="chartingToolkit:LineDataPoint">
-							<Setter Property="Background" Value="Yellow" />
-						</Style>
-					</chartingToolkit:LineSeries.DataPointStyle>
-				</chartingToolkit:LineSeries>
-				<chartingToolkit:LineSeries Title="Fail threshold"
+                    <chartingToolkit:LineSeries.DataPointStyle>
+                        <Style TargetType="chartingToolkit:LineDataPoint">
+                            <Setter Property="Background" Value="Yellow" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="chartingToolkit:LineDataPoint"></ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </chartingToolkit:LineSeries.DataPointStyle>
+                </chartingToolkit:LineSeries>
+                <chartingToolkit:LineSeries Title="Fail threshold"
 				                            ItemsSource="{Binding}"
 				                            IndependentValueBinding="{Binding Date}"
 				                            DependentValueBinding="{Binding FailThresholdMs}">
                     <chartingToolkit:LineSeries.DataPointStyle>
                         <Style TargetType="chartingToolkit:LineDataPoint">
                             <Setter Property="Background" Value="Red" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="chartingToolkit:LineDataPoint"></ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </chartingToolkit:LineSeries.DataPointStyle>
                 </chartingToolkit:LineSeries>
+                <chartingToolkit:ColumnSeries Title="Ping time"
+				                              ItemsSource="{Binding}"
+				                              IndependentValueBinding="{Binding Date}"
+				                              DependentValueBinding="{Binding PingTimeMs}">
+					<chartingToolkit:ColumnSeries.DataPointStyle>
+						<Style TargetType="chartingToolkit:ColumnDataPoint">
+							<Setter Property="Background" Value="White" />
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="chartingToolkit:ColumnDataPoint">
+										<Border BorderBrush="{TemplateBinding BorderBrush}"
+										        BorderThickness="{TemplateBinding BorderThickness}">
+											<Grid Background="{Binding PingQualityColor}">
+												<Rectangle>
+													<Rectangle.Fill>
+														<LinearGradientBrush>
+															<GradientStop Color="#ffffffff" Offset="0" />
+															<GradientStop Color="#99ffffff" Offset="1" />
+														</LinearGradientBrush>
+													</Rectangle.Fill>
+												</Rectangle>
+												<Border BorderBrush="#ccffffff" BorderThickness="1">
+													<Border BorderBrush="#77ffffff" BorderThickness="1" />
+												</Border>
+											</Grid>
+										</Border>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</chartingToolkit:ColumnSeries.DataPointStyle>
+				</chartingToolkit:ColumnSeries>
+				<chartingToolkit:LineSeries Title="Average"
+				                            ItemsSource="{Binding}"
+				                            IndependentValueBinding="{Binding Date}"
+				                            DependentValueBinding="{Binding AverageTimeMs}">
+					<chartingToolkit:LineSeries.DataPointStyle>
+						<Style TargetType="chartingToolkit:LineDataPoint">
+							<Setter Property="Background" Value="Black" />
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="chartingToolkit:LineDataPoint">
+										<Grid>
+											<Ellipse Fill="{Binding QualityColor}"
+											         Stroke="{TemplateBinding BorderBrush}"
+											         StrokeThickness="{TemplateBinding BorderThickness}" />
+											<Ellipse>
+												<Ellipse.Fill>
+													<LinearGradientBrush>
+														<GradientStop Color="#77ffffff" Offset="0" />
+														<GradientStop Color="#00ffffff" Offset="1" />
+													</LinearGradientBrush>
+												</Ellipse.Fill>
+											</Ellipse>
+										</Grid>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</chartingToolkit:LineSeries.DataPointStyle>
+				</chartingToolkit:LineSeries>
 			</chartingToolkit:Chart.Series>
 			<chartingToolkit:Chart.Axes>
 				<chartingToolkit:LinearAxis Orientation="Y"

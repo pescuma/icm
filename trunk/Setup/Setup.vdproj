@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_0775A86696B82B1A24D80127AFABF196"
+        "OwnerKey" = "8:_EE45557B80F1495DBC07EB0062EB5422"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0F03AA46A849499990CF1DAA8D565CD8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -77,12 +83,6 @@
         {
         "MsmKey" = "8:_71802C101A2840FD8648763BCB896ADD"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7F52F95E82EC496325FD548D2AA77EC3"
-        "OwnerKey" = "8:_EE45557B80F1495DBC07EB0062EB5422"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -220,13 +220,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7F52F95E82EC496325FD548D2AA77EC3"
+        "OwnerKey" = "8:_94494DB4996FF9FE289365C33B0B58F7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_94494DB4996FF9FE289365C33B0B58F7"
+        "OwnerKey" = "8:_0775A86696B82B1A24D80127AFABF196"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -346,6 +346,37 @@
         }
         "File"
         {
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0775A86696B82B1A24D80127AFABF196"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:AppLimit.NetSparkle.Net40, Version=1.0.22.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0775A86696B82B1A24D80127AFABF196"
+                    {
+                    "Name" = "8:AppLimit.NetSparkle.Net40.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:AppLimit.NetSparkle.Net40.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5F82A9271F3F4938883BC83BE8D5D3A7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0F03AA46A849499990CF1DAA8D565CD8"
             {
             "SourcePath" = "8:..\\Resources\\right_fail.png"
@@ -564,37 +595,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7F52F95E82EC496325FD548D2AA77EC3"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AppLimit.NetSparkle.Net40, Version=1.0.22.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_7F52F95E82EC496325FD548D2AA77EC3"
-                    {
-                    "Name" = "8:AppLimit.NetSparkle.Net40.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:AppLimit.NetSparkle.Net40.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_5F82A9271F3F4938883BC83BE8D5D3A7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_852A1986176C48EFAEBB3C1135C704BF"
@@ -1041,15 +1041,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ICM"
-        "ProductCode" = "8:{3345E9DA-C686-4FFD-A76F-F803A39867F7}"
-        "PackageCode" = "8:{9DBADB35-A46B-431B-9AC8-3FA9EECD411F}"
+        "ProductCode" = "8:{0D7E511C-AF9B-40A1-94FD-0E4EB2960738}"
+        "PackageCode" = "8:{93423E69-C243-42E6-99F2-02B608D000FD}"
         "UpgradeCode" = "8:{35D0B7EA-7A68-4783-9880-76BD328A5A11}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.2"
+        "ProductVersion" = "8:0.3"
         "Manufacturer" = "8:Ricardo Pescuma Domenecci"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/icm/issues/list"

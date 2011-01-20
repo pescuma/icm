@@ -61,11 +61,11 @@ namespace org.pescuma.icm
 
 			Closed += delegate
 			          	{
-							if (options != null)
-								options.Close();
-							if (history != null)
-								history.Close();
-						};
+			          		if (options != null)
+			          			options.Close();
+			          		if (history != null)
+			          			history.Close();
+			          	};
 		}
 
 		private void InitPosition()
@@ -367,7 +367,11 @@ namespace org.pescuma.icm
 			options = new Options(presenter);
 			options.Icon = LoadImage(presenter.TrayAppImage);
 			options.DataContext = presenter.Config.Clone();
-			options.Closed += delegate { options = null; };
+			options.Closed += delegate
+			                  	{
+			                  		options.DataContext = null;
+			                  		options = null;
+			                  	};
 
 			options.Show();
 		}
@@ -383,7 +387,11 @@ namespace org.pescuma.icm
 			history = new History();
 			history.Icon = LoadImage(presenter.TrayAppImage);
 			history.DataContext = presenter.History;
-			history.Closed += delegate { history = null; };
+			history.Closed += delegate
+			                  	{
+			                  		history.DataContext = null;
+			                  		history = null;
+			                  	};
 
 			history.Show();
 		}
